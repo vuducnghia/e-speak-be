@@ -1,0 +1,21 @@
+basePath: /api
+host: localhost:9000
+info:
+  contact: {}
+  title: Swagger Boilerplate API
+  version: "1.0"
+paths:
+  /application/heartbeat:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: return a status
+      tags:
+      - heartbeat
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

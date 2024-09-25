@@ -1,0 +1,32 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Swagger Boilerplate API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:9000",
+    "basePath": "/api",
+    "paths": {
+        "/application/heartbeat": {
+            "get": {
+                "tags": [
+                    "heartbeat"
+                ],
+                "summary": "return a status",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
