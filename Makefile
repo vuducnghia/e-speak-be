@@ -10,4 +10,4 @@ build-api:
 	go run src/main.go -c config/config.json
 
 run-local:
-	go run src/main.go -c config/config.json
+	go run src/main.go -c config.json

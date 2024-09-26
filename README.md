@@ -36,3 +36,12 @@ docker compose up --watch
 
 Open your browser and visit [http://localhost:9000/swagger/index.html](http://localhost:9000/swagger/index.html) to
 access the API doc.
+
+## Create sql migration
+```bash
+cd migrate
+go run main.go db init # init to generate bun_migration_locks table
+go run main.go db create_sql name_table
+go run main.go db migrate
+go run main.go db rollback
+```

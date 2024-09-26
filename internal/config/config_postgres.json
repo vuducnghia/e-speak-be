@@ -1,17 +1,16 @@
 {
   "application_config": {
-    "access_token": "",
-    "refresh_token": "",
+    "secret": "",
     "request_timeout": 300,
     "log_level": "1",
     "is_debug": true
   },
   "database_config": {
     "host": "localhost",
-    "port": "3306",
-    "username": "root",
-    "password": "mysql@123",
-    "database": "e_speak",
+    "port": "5432",
+    "username": "postgres",
+    "password": "1",
+    "database": "test",
     "is_debug": true
   },
   "redis_config": {

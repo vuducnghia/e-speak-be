@@ -1,31 +1,30 @@
 package main
 
 import (
-	"database/sql"
+	application "e-speak-be/internal/config"
+	log "e-speak-be/internal/logger"
 	"e-speak-be/services/migrate/migrations"
 	"fmt"
-	"log"
+
 	"os"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/uptrace/bun/dialect/mysqldialect"
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/uptrace/bun/migrate"
 	"github.com/urfave/cli/v2"
-
-	"github.com/uptrace/bun"
 )
 
 func main() {
-	sqldb, err := sql.Open("mysql", "root:mysql@123@tcp(localhost:3306)/e_speak")
-
-	if err != nil {
-		panic(err)
+	if err := application.LoadConfig(); err != nil {
+		log.Fatal().Err(err)
+	}
+	if err := application.InitializeApplication(); err != nil {
+		log.Fatal().Err(err).Msg("error initializing application")
 	}
 
-	db := bun.NewDB(sqldb, mysqldialect.New())
-	db.AddQueryHook(bundebug.NewQueryHook(
+	//db := bun.NewDB(sqldb, mysqldialect.New())
+	application.DB.AddQueryHook(bundebug.NewQueryHook(
 		bundebug.WithEnabled(false),
 		bundebug.FromEnv(),
 	))
@@ -34,11 +33,11 @@ func main() {
 		Name: "bun",
 
 		Commands: []*cli.Command{
-			newDBCommand(migrate.NewMigrator(db, migrations.Migrations)),
+			newDBCommand(migrate.NewMigrator(application.DB, migrations.Migrations)),
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("error running app")
 	}
 }
 
