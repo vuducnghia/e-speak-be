@@ -119,10 +119,10 @@ func loadEnvironment(c *Configuration) {
 	if c.ApplicationConfig == nil {
 		c.ApplicationConfig = &SystemConfig{}
 	}
-	c.ApplicationConfig.AccessToken = checkEnvironment("application_config__access_token", c.ApplicationConfig.AccessToken)
-	c.ApplicationConfig.RefreshToken = checkEnvironment("application_config__refresh_token", c.ApplicationConfig.RefreshToken)
-	c.ApplicationConfig.LogLevel = checkEnvironment("application_config__log_level", c.ApplicationConfig.LogLevel)
-	if val, ok := os.LookupEnv("application_config__is_debug"); ok {
+	c.ApplicationConfig.AccessToken = checkEnvironment("APPLICATION_CONFIG__ACCESS_TOKEN", c.ApplicationConfig.AccessToken)
+	c.ApplicationConfig.RefreshToken = checkEnvironment("APPLICATION_CONFIG__REFRESH_TOKEN", c.ApplicationConfig.RefreshToken)
+	c.ApplicationConfig.LogLevel = checkEnvironment("APPLICATION_CONFIG__LOG_LEVEL", c.ApplicationConfig.LogLevel)
+	if val, ok := os.LookupEnv("APPLICATION_CONFIG__IS_DEBUG"); ok {
 		if bVal, pErr := strconv.ParseBool(val); pErr == nil {
 			c.ApplicationConfig.IsDebug = bVal
 		}
@@ -131,12 +131,12 @@ func loadEnvironment(c *Configuration) {
 	if c.SQLConfig == nil {
 		c.SQLConfig = &DatabaseConfig{}
 	}
-	c.SQLConfig.Port = checkEnvironment("database_config__port", c.SQLConfig.Port)
-	c.SQLConfig.Host = checkEnvironment("database_config__host", c.SQLConfig.Host)
-	c.SQLConfig.Username = checkEnvironment("database_config__username", c.SQLConfig.Username)
-	c.SQLConfig.Password = checkEnvironment("database_config__password", c.SQLConfig.Password)
-	c.SQLConfig.Database = checkEnvironment("database_config__database", c.SQLConfig.Database)
-	if val, ok := os.LookupEnv("database_config__is_debug"); ok {
+	c.SQLConfig.Port = checkEnvironment("DATABASE_CONFIG__PORT", c.SQLConfig.Port)
+	c.SQLConfig.Host = checkEnvironment("DATABASE_CONFIG__HOST", c.SQLConfig.Host)
+	c.SQLConfig.Username = checkEnvironment("DATABASE_CONFIG__USERNAME", c.SQLConfig.Username)
+	c.SQLConfig.Password = checkEnvironment("DATABASE_CONFIG__PASSWORD", c.SQLConfig.Password)
+	c.SQLConfig.Database = checkEnvironment("DATABASE_CONFIG__DATABASE", c.SQLConfig.Database)
+	if val, ok := os.LookupEnv("DATABASE_CONFIG__IS_DEBUG"); ok {
 		if bVal, pErr := strconv.ParseBool(val); pErr == nil {
 			c.SQLConfig.IsDebug = bVal
 		}
@@ -145,13 +145,13 @@ func loadEnvironment(c *Configuration) {
 	if c.RedisConfig == nil {
 		c.RedisConfig = &RedisConfig{}
 	}
-	c.RedisConfig.Addr = checkEnvironment("redis_config__addr", c.RedisConfig.Addr)
-	//c.RedisConfig.Password = checkEnvironment("redis_config__password", c.RedisConfig.Password)
+	c.RedisConfig.Addr = checkEnvironment("REDIS_CONFIG__ADDR", c.RedisConfig.Addr)
+	//c.RedisConfig.Password = checkEnvironment("REDIS_CONFIG__PASSWORD", c.RedisConfig.Password)
 
 	if c.DirectoryConfig == nil {
 		c.DirectoryConfig = &DirectoryConfig{}
 	}
-	c.DirectoryConfig.BaseAssetUrl = checkEnvironment("directory_config__base_asset_url", c.DirectoryConfig.BaseAssetUrl)
-	c.DirectoryConfig.BaseUploadsDirectory = checkEnvironment("directory_config__base_uploads_directory", c.DirectoryConfig.BaseUploadsDirectory)
-	c.DirectoryConfig.ImagesDirectory = checkEnvironment("directory_config__images_directory", c.DirectoryConfig.ImagesDirectory)
+	c.DirectoryConfig.BaseAssetUrl = checkEnvironment("DIRECTORY_CONFIG__BASE_ASSET_URL", c.DirectoryConfig.BaseAssetUrl)
+	c.DirectoryConfig.BaseUploadsDirectory = checkEnvironment("DIRECTORY_CONFIG__BASE_UPLOADS_DIRECTORY", c.DirectoryConfig.BaseUploadsDirectory)
+	c.DirectoryConfig.ImagesDirectory = checkEnvironment("DIRECTORY_CONFIG__IMAGES_DIRECTORY", c.DirectoryConfig.ImagesDirectory)
 }
