@@ -4,6 +4,7 @@ import (
 	log "e-speak-be/internal/logger"
 	"errors"
 	"flag"
+	"fmt"
 	"github.com/joho/godotenv"
 )
 
@@ -18,10 +19,14 @@ func init() {
 func InitializeApplication() error {
 	if configuration.SQLConfig != nil {
 		ConnectDatabase(GetConfig().SQLConfig)
-	} else if configuration.RedisConfig != nil {
+	} else {
+		return errors.New("the mysql database has no configuration")
+	}
+
+	if err := configuration.RedisConfig; err != nil {
 		NewRedisCache(GetConfig().RedisConfig)
 	} else {
-		return errors.New("the postgres database has no configuration")
+		return errors.New(fmt.Sprintf("error initializing cache service: %s", err))
 	}
 	return nil
 }

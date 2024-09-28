@@ -1,0 +1,81 @@
+services:
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      database_config__host: ${DATABASE_CONFIG__HOST}
+      database_config__port: ${DATABASE_CONFIG__PORT}
+      database_config__username: ${DATABASE_CONFIG__USERNAME}
+      database_config__password: ${DATABASE_CONFIG__PASSWORD}
+      database_config__database: ${DATABASE_CONFIG__DATABASE}
+      database_config__is_debug: ${DATABASE_CONFIG__IS_DEBUG}
+      redis_config__addr: ${REDIS_CONFIG__ADDR}
+      redis_config__password: ${REDIS_CONFIG__PASSWORD}
+      application_config__is_debug: ${APPLICATION_CONFIG__IS_DEBUG}
+    ports:
+      - "9000:9000"
+    healthcheck:
+      test: curl http://localhost:9000/api/application/heartbeat
+      interval: 300s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mysql-network
+      - redis-network
+
+
+
+  mysql:
+    image: mysql:9.0.1
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DATABASE_CONFIG__DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_CONFIG__PASSWORD}
+      MYSQL_USER: ${DATABASE_CONFIG__USERNAME}
+      MYSQL_PASSWORD: ${DATABASE_CONFIG__PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_RANDOM_ROOT_PASSWORD: 0
+    volumes:
+      - ../mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    ports:
+      - "3306:3306"
+    networks:
+      - mysql-network
+
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+#    environment:
+#      REDIS_USER: ${REDIS_CONFIG__USER}
+#      REDIS_PASSWORD: ${REDIS_CONFIG__PASSWORD}
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - redis-network
+
+networks:
+  mysql-network:
+    name: mysql-network
+    driver: bridge
+  redis-network:
+    name: redis-network
+    driver: bridge

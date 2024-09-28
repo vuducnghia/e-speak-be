@@ -62,7 +62,8 @@ func setDefaultConfig() *Configuration {
 			BaseUploadsDirectory: "uploads/",
 			ImagesDirectory:      "images/",
 		},
-		SQLConfig: nil,
+		SQLConfig:   nil,
+		RedisConfig: nil,
 	}
 }
 
@@ -140,6 +141,12 @@ func loadEnvironment(c *Configuration) {
 			c.SQLConfig.IsDebug = bVal
 		}
 	}
+
+	if c.RedisConfig == nil {
+		c.RedisConfig = &RedisConfig{}
+	}
+	c.RedisConfig.Addr = checkEnvironment("redis_config__addr", c.RedisConfig.Addr)
+	//c.RedisConfig.Password = checkEnvironment("redis_config__password", c.RedisConfig.Password)
 
 	if c.DirectoryConfig == nil {
 		c.DirectoryConfig = &DirectoryConfig{}
