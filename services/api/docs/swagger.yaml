@@ -1,4 +1,21 @@
 basePath: /api
+definitions:
+  models.User:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      google_id:
+        type: string
+      is_pay:
+        type: boolean
+      username:
+        type: string
+    required:
+    - email
+    - username
+    type: object
 host: localhost:9000
 info:
   contact: {}
@@ -13,6 +30,102 @@ paths:
       summary: return a status
       tags:
       - heartbeat
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      responses:
+        "200":
+          description: OK
+      summary: create a user
+      tags:
+      - auth
+  /users:
+    get:
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: page_number
+        in: query
+        name: page_number
+        type: string
+      - description: search_query
+        in: query
+        name: search_query
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: return list users
+      tags:
+      - users
+  /users/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: delete a user
+      tags:
+      - users
+    get:
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: return a user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: update a user
+      tags:
+      - users
 securityDefinitions:
   Bearer:
     in: header
