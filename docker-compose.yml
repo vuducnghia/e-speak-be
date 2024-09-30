@@ -69,6 +69,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+    ports:
+      - "6379:6379"
     networks:
       - redis-network
 
