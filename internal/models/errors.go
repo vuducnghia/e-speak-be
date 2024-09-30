@@ -1,6 +1,7 @@
 package models
 
 import (
+	log "e-speak-be/internal/logger"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,6 +12,7 @@ type ErrorInt interface {
 	Error() string
 	GetStatus() int
 	Response() gin.H
+	Log(ctx *gin.Context)
 }
 type InternalError struct {
 	BaseModel
@@ -43,8 +45,20 @@ func (e *InternalError) Response() gin.H {
 	return gin.H{"error_id": e.Id, "error": e.Error(), "error_type": e.Type}
 }
 
+func (e *InternalError) Log(ctx *gin.Context) {
+	e.Method = ctx.Request.Method
+	e.Endpoint = ctx.Request.RequestURI
+	if _, err := db.NewInsert().Model(e).Exec(ctx); err != nil {
+		log.Error().Err(err).Msg("an error occurred trying to save the error")
+	}
+}
+
 func (e *ValidatorError) Response() gin.H {
 	return gin.H{"error_id": e.Id, "error": e.Error(), "error_type": e.Type, "fields": e.ValidationErrors}
+}
+
+func (e *ValidatorError) Log(ctx *gin.Context) {
+	log.Debug().Msgf("%s for more details refer to: %d", e.Message, e.Id)
 }
 
 func newBadRequest(c string, d string, m string) *InternalError {

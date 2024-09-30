@@ -50,5 +50,6 @@ func ErrorHandler(c *gin.Context) {
 }
 
 func processError(e models.ErrorInt, c *gin.Context) {
-	c.JSON(e.GetStatus(), e.Response())
+	e.
+		c.JSON(e.GetStatus(), e.Response())
 }
