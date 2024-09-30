@@ -3,6 +3,7 @@ package routes
 import (
 	"e-speak-be/services/api/handlers"
 	"e-speak-be/services/api/middleware"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +15,5 @@ func addUserRoutes(r *gin.RouterGroup) {
 		users.GET("/:user_id", handlers.Handler(handlers.GetUser))
 		users.PUT("/:user_id", handlers.Handler(handlers.UpdateUser))
 		users.DELETE("/:user_id", handlers.Handler(handlers.DeleteUser))
-
 	}
 }
