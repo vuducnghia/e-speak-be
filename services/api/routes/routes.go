@@ -3,10 +3,11 @@ package routes
 import (
 	"e-speak-be/services/api/docs"
 	"e-speak-be/services/api/middleware"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger" // gin-swagger middleware
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 func SetupRouter() *gin.Engine {
@@ -23,7 +24,15 @@ func SetupRouter() *gin.Engine {
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods:    []string{"POST", "GET", "OPTIONS", "PUT", "DELETE", "PATCH"},
-		AllowHeaders:    []string{"Accept", "Accept-Encoding", "Authorization", "Content-Type", "Content-Length", "Origin", "X-CSRF-Token"},
+		AllowHeaders: []string{
+			"Accept",
+			"Accept-Encoding",
+			"Authorization",
+			"Content-Type",
+			"Content-Length",
+			"Origin",
+			"X-CSRF-Token",
+		},
 	}))
 
 	router.Use(middleware.Timeout)
@@ -37,6 +46,7 @@ func SetupRouter() *gin.Engine {
 	addHeartbeat(NoAuthApi)
 
 	addUserRoutes(NoAuthApi)
+	addAuthRoutes(NoAuthApi)
 	// use ginSwagger middleware to serve the API docs
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(
 		swaggerFiles.Handler,
