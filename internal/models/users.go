@@ -43,7 +43,7 @@ func (u *Users) GetAll(c *gin.Context) (int, error) {
 }
 
 func (u *User) GetById(c *gin.Context) error {
-	return db.NewSelect().Model(u).Scan(c)
+	return db.NewSelect().Model(u).WherePK().Scan(c)
 }
 
 func (u *User) UpsertByGoogleId(c *gin.Context) error {

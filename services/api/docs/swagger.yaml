@@ -16,6 +16,16 @@ definitions:
     - email
     - username
     type: object
+  models.UserCredentials:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
 host: localhost:9000
 info:
   contact: {}
@@ -30,6 +40,25 @@ paths:
       summary: return a status
       tags:
       - heartbeat
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCredentials'
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: login user
+      tags:
+      - auth
   /auth/register:
     post:
       consumes:
@@ -47,6 +76,22 @@ paths:
       summary: create a user
       tags:
       - auth
+  /errors/{id}:
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: return a error
+      tags:
+      - errors
   /users:
     get:
       parameters:

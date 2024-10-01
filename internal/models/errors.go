@@ -4,6 +4,7 @@ import (
 	log "e-speak-be/internal/logger"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/uptrace/bun"
 	"net/http"
 	"time"
 )
@@ -15,14 +16,15 @@ type ErrorInt interface {
 	Log(ctx *gin.Context)
 }
 type InternalError struct {
-	BaseModel
-	Status    int       `json:"status"`
-	Method    string    `json:"method"`
-	Endpoint  string    `json:"endpoint"`
-	Type      string    `json:"type"`
-	Message   string    `json:"message"`
-	Details   string    `json:"details"`
-	CreatedAt time.Time `json:"created_at"`
+	bun.BaseModel `bun:"table:errors"`
+	Id            int32     `json:"id" bun:",pk,autoincrement"`
+	Status        int       `json:"status"`
+	Method        string    `json:"method"`
+	Endpoint      string    `json:"endpoint"`
+	Type          string    `json:"type"`
+	Message       string    `json:"message"`
+	Details       string    `json:"details"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 type ValidatorError struct {
 	*InternalError
@@ -51,6 +53,10 @@ func (e *InternalError) Log(ctx *gin.Context) {
 	if _, err := db.NewInsert().Model(e).Exec(ctx); err != nil {
 		log.Error().Err(err).Msg("an error occurred trying to save the error")
 	}
+}
+
+func (e *InternalError) GetById(ctx *gin.Context) error {
+	return db.NewSelect().Model(e).WherePK().Scan(ctx)
 }
 
 func (e *ValidatorError) Response() gin.H {
