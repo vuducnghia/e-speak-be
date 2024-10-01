@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	log "e-speak-be/internal/logger"
 	"e-speak-be/internal/models"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -34,6 +36,17 @@ func LoginUser(c *gin.Context) *gin.Error {
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(credentials.Password)); err != nil {
 		return AuthenticationError(err, "wrong password", c)
 	}
+
+	session := &models.Session{
+		UserId:     u.Id,
+		Expiration: time.Minute * 15,
+	}
+	if err := session.SetSession(c); err != nil {
+		return InternalError(err, "cannot set session", c)
+	}
+
+	log.Debug().Msgf("session_id: %s", session.Id)
+
 	c.JSON(http.StatusOK, u)
 	return nil
 }

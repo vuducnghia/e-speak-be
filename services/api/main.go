@@ -7,11 +7,12 @@ import (
 	"e-speak-be/internal/models"
 	"e-speak-be/services/api/routes"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // @title           Swagger Boilerplate API
@@ -30,6 +31,9 @@ func main() {
 	}
 	if err := models.SetDatabase(application.DB); err != nil {
 		log.Error().Err(err).Msg("error connecting to database")
+	}
+	if err := models.SetCache(application.RedisClient); err != nil {
+		log.Error().Err(err).Msg("error connect to cache")
 	}
 	setupDebug()
 
