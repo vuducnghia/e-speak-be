@@ -13,10 +13,12 @@ services:
       database_config__database: ${DATABASE_CONFIG__DATABASE}
       database_config__is_debug: ${DATABASE_CONFIG__IS_DEBUG}
       redis_config__addr: ${REDIS_CONFIG__ADDR}
-      redis_config__password: ${REDIS_CONFIG__PASSWORD}
+#      redis_config__password: ${REDIS_CONFIG__PASSWORD}
       application_config__is_debug: ${APPLICATION_CONFIG__IS_DEBUG}
     ports:
       - "9000:9000"
+    volumes:
+      - ./uploads:/uploads
     healthcheck:
       test: curl http://localhost:9000/api/application/heartbeat
       interval: 300s
@@ -30,7 +32,6 @@ services:
     networks:
       - mysql-network
       - redis-network
-
 
 
   mysql:

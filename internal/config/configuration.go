@@ -58,7 +58,7 @@ func setDefaultConfig() *Configuration {
 			RequestTimeout: 300,
 		},
 		DirectoryConfig: &DirectoryConfig{
-			BaseAssetUrl:         "localhost",
+			BaseAssetUrl:         "localhost:9000/",
 			BaseUploadsDirectory: "uploads/",
 			ImagesDirectory:      "images/",
 		},

@@ -1,5 +1,28 @@
 basePath: /api
 definitions:
+  gin.H:
+    additionalProperties: {}
+    type: object
+  models.Image:
+    properties:
+      id:
+        type: integer
+      metadata:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+      path:
+        type: string
+      size_in_bytes:
+        type: integer
+      thumbnail_path:
+        type: string
+      thumbnail_url:
+        type: string
+      url:
+        type: string
+    type: object
   models.User:
     properties:
       avatar:
@@ -92,6 +115,41 @@ paths:
       summary: return a error
       tags:
       - errors
+  /images:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Image file to upload
+        in: formData
+        name: image_file
+        required: true
+        type: file
+      - description: Thumbnail image file to upload
+        in: formData
+        name: image_thumbnail_file
+        required: true
+        type: file
+      - description: Metadata associated with the image
+        in: formData
+        name: metadata
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Image'
+        "400":
+          description: 'Bad Request: Validation Error'
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: 'Internal Server Error: Could not save file or database error'
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: upload an image with thumbnail
+      tags:
+      - images
   /users:
     get:
       parameters:

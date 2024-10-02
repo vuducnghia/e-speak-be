@@ -71,7 +71,7 @@ func UpdateUser(c *gin.Context) *gin.Error {
 		return EntityNotFoundError(err, "user", c)
 	}
 	if err := c.ShouldBindJSON(u); err != nil {
-		return ValidatorError(err, "error validating user entity", c)
+		return ValidationError(err, "error validating user entity", c)
 	}
 	if err := u.Update(c); err != nil {
 		return DatabaseError(err, "", c)
@@ -91,10 +91,10 @@ func CreateUser(c *gin.Context) *gin.Error {
 	u := &models.User{}
 	p := &models.UserPassword{}
 	if err := c.ShouldBindBodyWith(u, binding.JSON); err != nil {
-		return ValidatorError(err, "error validating user entity", c)
+		return ValidationError(err, "error validating user entity", c)
 	}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		return ValidatorError(err, "error validating user entity", c)
+		return ValidationError(err, "error validating user entity", c)
 	}
 	if hash, err := bcrypt.GenerateFromPassword([]byte(p.Password), 10); err != nil {
 		return InternalError(err, "error creating the hashed password", c)

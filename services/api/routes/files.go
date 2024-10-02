@@ -1,0 +1,10 @@
+package routes
+
+import (
+	"e-speak-be/services/api/handlers"
+	"github.com/gin-gonic/gin"
+)
+
+func addImageRoutes(r *gin.RouterGroup) {
+	r.POST("/images", handlers.Handler(handlers.UploadImage))
+}

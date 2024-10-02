@@ -25,7 +25,7 @@ type User struct {
 
 	//	relations
 }
-type Users []User
+type Users []*User
 
 func (u *User) Create(c *gin.Context) error {
 	if _, err := db.NewInsert().Model(u).Exec(c); err != nil {
