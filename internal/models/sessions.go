@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	log "e-speak-be/internal/logger"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -33,8 +32,6 @@ func (s *Session) GetSession(c context.Context) error {
 	if err != nil {
 		return err
 	}
-
-	log.Debug().Msg(val)
 
 	err = json.Unmarshal([]byte(val), &s)
 

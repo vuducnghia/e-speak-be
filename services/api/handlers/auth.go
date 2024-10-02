@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	log "e-speak-be/internal/logger"
 	"e-speak-be/internal/models"
+	"e-speak-be/internal/utils"
 	"fmt"
 	"net/http"
 	"time"
@@ -45,7 +45,12 @@ func LoginUser(c *gin.Context) *gin.Error {
 		return InternalError(err, "cannot set session", c)
 	}
 
-	log.Debug().Msgf("session_id: %s", session.Id)
+	token, err := utils.CreateToken(&utils.TokenPayload{SessionId: session.Id}, session.Expiration)
+	if err != nil {
+		return InternalError(err, "cannot create token", c)
+	}
+
+	fmt.Printf(">> token: %s", token)
 
 	c.JSON(http.StatusOK, u)
 	return nil
