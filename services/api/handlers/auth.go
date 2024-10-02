@@ -21,7 +21,7 @@ import (
 func LoginUser(c *gin.Context) *gin.Error {
 	credentials := &models.UserCredentials{}
 	if err := c.ShouldBindBodyWith(credentials, binding.JSON); err != nil {
-		return ValidatorError(err, "error validating user credentials entity", c)
+		return ValidationError(err, "error validating user credentials entity", c)
 	}
 	u := &models.User{Email: credentials.Email}
 	if err := u.GetByEmail(c); err != nil {

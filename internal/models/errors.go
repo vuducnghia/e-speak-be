@@ -26,7 +26,7 @@ type InternalError struct {
 	Details       string    `json:"details"`
 	CreatedAt     time.Time `json:"created_at"`
 }
-type ValidatorError struct {
+type ValidationError struct {
 	*InternalError
 	ValidationErrors map[string]string `json:"validation_errors"`
 }
@@ -59,11 +59,11 @@ func (e *InternalError) GetById(ctx *gin.Context) error {
 	return db.NewSelect().Model(e).WherePK().Scan(ctx)
 }
 
-func (e *ValidatorError) Response() gin.H {
+func (e *ValidationError) Response() gin.H {
 	return gin.H{"error_id": e.Id, "error": e.Error(), "error_type": e.Type, "fields": e.ValidationErrors}
 }
 
-func (e *ValidatorError) Log(ctx *gin.Context) {
+func (e *ValidationError) Log(ctx *gin.Context) {
 	log.Debug().Msgf("%s for more details refer to: %d", e.Message, e.Id)
 }
 
@@ -72,7 +72,7 @@ func newBadRequest(c string, d string, m string) *InternalError {
 		Status:  http.StatusBadRequest,
 		Type:    c,
 		Details: d,
-		Method:  m,
+		Message: m,
 	}
 }
 
@@ -128,8 +128,8 @@ func NewInternalError(e error, m string) *InternalError {
 	return newServerError("internal_error", e.Error(), m)
 }
 
-func NewValidatorError(e error, m string, fields map[string]string) *ValidatorError {
-	return &ValidatorError{
+func NewValidationError(e error, m string, fields map[string]string) *ValidationError {
+	return &ValidationError{
 		newBadRequest("validation_error", e.Error(), m), fields,
 	}
 }

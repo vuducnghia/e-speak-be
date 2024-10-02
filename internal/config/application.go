@@ -17,6 +17,11 @@ func init() {
 }
 
 func InitializeApplication() error {
+	InitializeServiceContainer()
+	if err := serviceContainer.InitializeFileService(); err != nil {
+		return errors.New(fmt.Sprintf("error initializing file service: %s", err))
+	}
+
 	if configuration.SQLConfig != nil {
 		ConnectDatabase(GetConfig().SQLConfig)
 	} else {

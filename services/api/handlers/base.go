@@ -52,7 +52,7 @@ func InternalError(e error, message string, c *gin.Context) *gin.Error {
 	return c.Error(models.NewInternalError(e, message))
 }
 
-func ValidatorError(e error, m string, c *gin.Context) *gin.Error {
+func ValidationError(e error, m string, c *gin.Context) *gin.Error {
 	fields := make(map[string]string)
 	var parseError *time.ParseError
 	var validationErrors validator.ValidationErrors
@@ -63,7 +63,7 @@ func ValidatorError(e error, m string, c *gin.Context) *gin.Error {
 		for _, fieldErr := range e.(validator.ValidationErrors) {
 			fields[fieldErr.Field()] = fieldErr.Tag() + " - " + fieldErr.Namespace()
 		}
-		return c.Error(models.NewValidatorError(e, m, fields))
+		return c.Error(models.NewValidationError(e, m, fields))
 	default:
 		return c.Error(models.NewBadRequestError(e, "unspecified error occurred with the request binding"))
 	}
