@@ -37,21 +37,51 @@ func LoginUser(c *gin.Context) *gin.Error {
 		return AuthenticationError(err, "wrong password", c)
 	}
 
+	accessExpiration := time.Minute * 15
+	refreshExpiration := time.Hour * 24
+
 	session := &models.Session{
 		UserId:     u.Id,
-		Expiration: time.Minute * 15,
+		Expiration: refreshExpiration,
 	}
 	if err := session.SetSession(c); err != nil {
 		return InternalError(err, "cannot set session", c)
 	}
 
-	token, err := utils.CreateToken(&utils.TokenPayload{SessionId: session.Id}, session.Expiration)
+	refreshToken, err := utils.CreateToken(session.Id, session.Expiration)
 	if err != nil {
-		return InternalError(err, "cannot create token", c)
+		return InternalError(err, "cannot create refresh token", c)
 	}
 
-	fmt.Printf(">> token: %s", token)
+	accessToken, err := utils.CreateToken(session.Id, accessExpiration)
+	if err != nil {
+		return InternalError(err, "cannot create refresh token", c)
+	}
+
+	c.SetCookie(
+		"access_token",
+		accessToken,
+		int(accessExpiration.Seconds()),
+		"/",
+		"localhost",
+		false,
+		true,
+	)
+	c.SetCookie(
+		"refresh_token",
+		refreshToken,
+		int(refreshExpiration.Seconds()),
+		"/",
+		"localhost",
+		false,
+		true,
+	)
 
 	c.JSON(http.StatusOK, u)
+	return nil
+}
+
+func GetMe(c *gin.Context) *gin.Error {
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 	return nil
 }

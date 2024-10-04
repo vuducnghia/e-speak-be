@@ -12,3 +12,10 @@ func addAuthRoutes(r *gin.RouterGroup) {
 		auth.POST("/login", handlers.Handler(handlers.LoginUser))
 	}
 }
+
+func addTestAuthRoutes(r *gin.RouterGroup) {
+	auth := r.Group("/auth")
+	{
+		auth.GET("/me", handlers.Handler(handlers.GetMe))
+	}
+}

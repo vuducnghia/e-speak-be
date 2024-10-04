@@ -33,7 +33,7 @@ func VerifyToken(token string) (string, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return "", errors.New("unexpected token signing method")
 		}
-		return secretKey, nil
+		return []byte(secretKey), nil
 	}
 	jwtToken, err := jwt.Parse(token, keyFunc)
 	if err != nil {
@@ -45,7 +45,7 @@ func VerifyToken(token string) (string, error) {
 
 	payload, ok := jwtToken.Claims.(*TokenPayload)
 	if !ok {
-		return "", errors.New("invalid key type used as authorization key")
+		return "", errors.New("unable to extract claims")
 	}
 
 	return payload.SessionId, nil
