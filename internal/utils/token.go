@@ -35,7 +35,7 @@ func VerifyToken(token string) (string, error) {
 		}
 		return []byte(secretKey), nil
 	}
-	jwtToken, err := jwt.Parse(token, keyFunc)
+	jwtToken, err := jwt.ParseWithClaims(token, &TokenPayload{}, keyFunc)
 	if err != nil {
 		return "", err
 	}

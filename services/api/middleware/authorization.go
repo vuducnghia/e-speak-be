@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"e-speak-be/internal/models"
 	"e-speak-be/internal/utils"
 	"net/http"
 
@@ -26,6 +27,17 @@ func AuthorizationHandler(c *gin.Context) {
 		return
 	}
 
-	c.Set("session_id", sessionId)
+	session := &models.Session{
+		Id: sessionId,
+	}
+	err = session.GetSession(c)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "session not found", "error": err.Error()},
+		)
+	}
+
+	c.Set("session", session)
 	c.Next()
 }
