@@ -5,8 +5,6 @@ definitions:
     type: object
   models.Image:
     properties:
-      id:
-        type: integer
       metadata:
         additionalProperties: true
         type: object
@@ -16,8 +14,6 @@ definitions:
         type: string
       size_in_bytes:
         type: integer
-      thumbnail_path:
-        type: string
       thumbnail_url:
         type: string
       url:
@@ -48,6 +44,17 @@ definitions:
     required:
     - email
     - password
+    type: object
+  models.Vocabulary:
+    properties:
+      audio_url:
+        type: string
+      text:
+        type: string
+      transcript_ipa:
+        type: string
+      translation:
+        type: string
     type: object
 host: localhost:9000
 info:
@@ -229,6 +236,51 @@ paths:
       summary: update a user
       tags:
       - users
+  /vocabularies/detail/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the vocabulary entry that matches the specified word
+        or phrase.
+      parameters:
+      - description: Vocabulary term to search for
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vocabulary details for the matching term
+          schema:
+            $ref: '#/definitions/models.Vocabulary'
+      summary: Fetch vocabulary details
+      tags:
+      - Vocabulary
+  /vocabularies/search:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve vocabulary entries that match the provided word.
+      parameters:
+      - description: The vocabulary word to search for
+        in: path
+        name: word
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of matching vocabulary entries
+          schema:
+            items:
+              $ref: '#/definitions/models.Vocabulary'
+            type: array
+      summary: Search vocabularies by word
+      tags:
+      - vocabularies
 securityDefinitions:
   Bearer:
     in: header
