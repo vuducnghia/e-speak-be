@@ -22,7 +22,7 @@ func (v *Vocabulary) Create(c *gin.Context) error {
 
 func (v *Vocabularies) SearchByWord(word string, c *gin.Context) error {
 	searchTerm := word + "%"
-	return db.NewSelect().Model(v).Where("Text LIKE ?", searchTerm).Limit(10).Scan(c)
+	return db.NewSelect().Model(v).Where("text LIKE ?", searchTerm).Limit(10).Scan(c)
 
 }
 

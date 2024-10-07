@@ -307,7 +307,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Vocabulary"
+                    "vocabularies"
                 ],
                 "summary": "Fetch vocabulary details",
                 "parameters": [
@@ -347,7 +347,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "The vocabulary word to search for",
                         "name": "word",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],

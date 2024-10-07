@@ -300,7 +300,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Vocabulary"
+                    "vocabularies"
                 ],
                 "summary": "Fetch vocabulary details",
                 "parameters": [
@@ -340,7 +340,7 @@
                         "type": "string",
                         "description": "The vocabulary word to search for",
                         "name": "word",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
