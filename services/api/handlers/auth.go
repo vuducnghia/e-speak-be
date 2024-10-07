@@ -37,6 +37,7 @@ func LoginUser(c *gin.Context) *gin.Error {
 		return AuthenticationError(err, "wrong password", c)
 	}
 
+	// TODO: replace with config variables
 	accessExpiration := time.Minute * 15
 	refreshExpiration := time.Hour * 24
 
@@ -55,7 +56,7 @@ func LoginUser(c *gin.Context) *gin.Error {
 
 	accessToken, err := utils.CreateToken(session.Id, accessExpiration)
 	if err != nil {
-		return InternalError(err, "cannot create refresh token", c)
+		return InternalError(err, "cannot create access token", c)
 	}
 
 	c.SetCookie(
@@ -78,6 +79,50 @@ func LoginUser(c *gin.Context) *gin.Error {
 	)
 
 	c.JSON(http.StatusOK, u)
+	return nil
+}
+
+// LoginUser 	godoc
+// @Summary		refresh token
+// @Tags		auth
+// @Accept      json
+// @Success 	200
+// @Router		/auth/refresh_token [post]
+// @Security 	Bearer
+func RefreshToken(c *gin.Context) *gin.Error {
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		return BadRequestError(err, "missing refresh_token", c)
+	}
+
+	sessionId, err := utils.VerifyToken(refreshToken)
+	if err != nil {
+		return BadRequestError(err, "invalid refresh_token", c)
+	}
+
+	session := &models.Session{Id: sessionId}
+	err = session.GetSession(c)
+	if err != nil {
+		return InternalError(err, "faild to get session", c)
+	}
+
+	accessExpiration := time.Minute * 15
+
+	accessToken, err := utils.CreateToken(session.Id, accessExpiration)
+	if err != nil {
+		return InternalError(err, "cannot create access token", c)
+	}
+
+	c.SetCookie(
+		"access_token",
+		accessToken,
+		int(accessExpiration.Seconds()),
+		"/",
+		"localhost",
+		false,
+		true,
+	)
+
 	return nil
 }
 
