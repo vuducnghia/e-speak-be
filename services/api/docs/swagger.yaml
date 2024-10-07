@@ -106,6 +106,35 @@ paths:
       summary: create a user
       tags:
       - auth
+  /check-phonemes:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Audio file to upload
+        in: formData
+        name: audio_file
+        required: true
+        type: file
+      - description: ground_truth
+        in: formData
+        name: ground_truth
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: 'Bad Request: Validation Error'
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: 'Internal Server Error: Could not save file'
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: upload an audio with phoneme
+      tags:
+      - phonemes
   /errors/{id}:
     get:
       parameters:

@@ -18,6 +18,10 @@ func GetImagesDirectory() string {
 	return GetBaseUploadsDirectory() + application.GetConfig().DirectoryConfig.ImagesDirectory
 }
 
+func GetAudiosDirectory() string {
+	return GetBaseUploadsDirectory() + application.GetConfig().DirectoryConfig.AudiosDirectory
+}
+
 func GetUniqueFileName(extension string) string {
 	return GetUniqueFileNameNoExtension() + "." + extension
 }

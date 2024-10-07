@@ -32,7 +32,7 @@ services:
     networks:
       - mysql-network
       - redis-network
-
+      - phoneme-network
 
   mysql:
     image: mysql:9.0.1
@@ -75,10 +75,24 @@ services:
     networks:
       - redis-network
 
+  phoneme:
+    image: phoneme
+    container_name: phoneme_ai
+    volumes:
+      - ./uploads/audios:/app/uploads/audios
+    ports:
+      - "5000:5000"
+    networks:
+      - phoneme-network
+
+
 networks:
   mysql-network:
     name: mysql-network
     driver: bridge
   redis-network:
     name: redis-network
+    driver: bridge
+  phoneme-network:
+    name: phoneme-network
     driver: bridge
