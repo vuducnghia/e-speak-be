@@ -5,8 +5,6 @@ definitions:
     type: object
   models.Image:
     properties:
-      id:
-        type: integer
       metadata:
         additionalProperties: true
         type: object
@@ -16,8 +14,6 @@ definitions:
         type: string
       size_in_bytes:
         type: integer
-      thumbnail_path:
-        type: string
       thumbnail_url:
         type: string
       url:
@@ -80,6 +76,18 @@ paths:
       security:
       - Bearer: []
       summary: login user
+      tags:
+      - auth
+  /auth/refresh_token:
+    post:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: refresh token
       tags:
       - auth
   /auth/register:

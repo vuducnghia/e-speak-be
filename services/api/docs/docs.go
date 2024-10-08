@@ -60,6 +60,27 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/refresh_token": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "refresh token",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/auth/register": {
             "post": {
                 "consumes": [
@@ -306,9 +327,6 @@ const docTemplate = `{
         "models.Image": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "metadata": {
                     "type": "object",
                     "additionalProperties": true
@@ -321,9 +339,6 @@ const docTemplate = `{
                 },
                 "size_in_bytes": {
                     "type": "integer"
-                },
-                "thumbnail_path": {
-                    "type": "string"
                 },
                 "thumbnail_url": {
                     "type": "string"

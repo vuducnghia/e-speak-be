@@ -82,7 +82,7 @@ func LoginUser(c *gin.Context) *gin.Error {
 	return nil
 }
 
-// LoginUser 	godoc
+// RefreshToken godoc
 // @Summary		refresh token
 // @Tags		auth
 // @Accept      json
@@ -123,6 +123,7 @@ func RefreshToken(c *gin.Context) *gin.Error {
 		true,
 	)
 
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 	return nil
 }
 
