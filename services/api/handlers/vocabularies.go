@@ -7,13 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SearchVocabularies godoc
+// SearchByWord godoc
 // @Summary     Search vocabularies by word
 // @Description Retrieve vocabulary entries that match the provided word.
 // @Tags        vocabularies
 // @Accept      json
 // @Produce     json
-// @Param       word path string true "The vocabulary word to search for"
+// @Param       word query string true "The vocabulary word to search for"
 // @Success     200 {object} models.Vocabularies "List of matching vocabulary entries"
 // @Router      /vocabularies/search [get]
 func SearchByWord(c *gin.Context) *gin.Error {
@@ -32,10 +32,10 @@ func SearchByWord(c *gin.Context) *gin.Error {
 	return nil
 }
 
-// GetDetailVocabulary godoc
+// GetDetailWord godoc
 // @Summary     Fetch vocabulary details
 // @Description Retrieves the vocabulary entry that matches the specified word or phrase.
-// @Tags        Vocabulary
+// @Tags        vocabularies
 // @Accept      json
 // @Produce     json
 // @Param       id path string true "Vocabulary term to search for"

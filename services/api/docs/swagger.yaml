@@ -286,7 +286,7 @@ paths:
             $ref: '#/definitions/models.Vocabulary'
       summary: Fetch vocabulary details
       tags:
-      - Vocabulary
+      - vocabularies
   /vocabularies/search:
     get:
       consumes:
@@ -294,7 +294,7 @@ paths:
       description: Retrieve vocabulary entries that match the provided word.
       parameters:
       - description: The vocabulary word to search for
-        in: path
+        in: query
         name: word
         required: true
         type: string
