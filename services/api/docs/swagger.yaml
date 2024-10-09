@@ -45,6 +45,17 @@ definitions:
     - email
     - password
     type: object
+  models.Vocabulary:
+    properties:
+      audio_url:
+        type: string
+      text:
+        type: string
+      transcript_ipa:
+        type: string
+      translation:
+        type: string
+    type: object
 host: localhost:9000
 info:
   contact: {}
@@ -107,6 +118,35 @@ paths:
       summary: create a user
       tags:
       - auth
+  /check-phonemes:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Audio file to upload
+        in: formData
+        name: audio_file
+        required: true
+        type: file
+      - description: ground_truth
+        in: formData
+        name: ground_truth
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: 'Bad Request: Validation Error'
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: 'Internal Server Error: Could not save file'
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: upload an audio with phoneme
+      tags:
+      - phonemes
   /errors/{id}:
     get:
       parameters:
@@ -237,6 +277,51 @@ paths:
       summary: update a user
       tags:
       - users
+  /vocabularies/detail/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the vocabulary entry that matches the specified word
+        or phrase.
+      parameters:
+      - description: Vocabulary term to search for
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vocabulary details for the matching term
+          schema:
+            $ref: '#/definitions/models.Vocabulary'
+      summary: Fetch vocabulary details
+      tags:
+      - vocabularies
+  /vocabularies/search:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve vocabulary entries that match the provided word.
+      parameters:
+      - description: The vocabulary word to search for
+        in: query
+        name: word
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of matching vocabulary entries
+          schema:
+            items:
+              $ref: '#/definitions/models.Vocabulary'
+            type: array
+      summary: Search vocabularies by word
+      tags:
+      - vocabularies
 securityDefinitions:
   Bearer:
     in: header

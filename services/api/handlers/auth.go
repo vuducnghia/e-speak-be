@@ -125,8 +125,3 @@ func RefreshToken(c *gin.Context) *gin.Error {
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 	return nil
 }
-
-func GetMe(c *gin.Context) *gin.Error {
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
-	return nil
-}

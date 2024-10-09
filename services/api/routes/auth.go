@@ -13,10 +13,3 @@ func addAuthRoutes(r *gin.RouterGroup) {
 		auth.POST("/refresh_token", handlers.Handler(handlers.RefreshToken))
 	}
 }
-
-func addTestAuthRoutes(r *gin.RouterGroup) {
-	auth := r.Group("/auth")
-	{
-		auth.GET("/me", handlers.Handler(handlers.GetMe))
-	}
-}

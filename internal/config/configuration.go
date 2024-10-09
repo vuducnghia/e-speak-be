@@ -50,6 +50,7 @@ type DirectoryConfig struct {
 	BaseAssetUrl         string `json:"base_asset_url"`
 	BaseUploadsDirectory string `json:"base_uploads_directory"`
 	ImagesDirectory      string `json:"images_directory"`
+	AudiosDirectory      string `json:"audios_directory"`
 }
 
 func setDefaultConfig() *Configuration {
@@ -64,6 +65,7 @@ func setDefaultConfig() *Configuration {
 			BaseAssetUrl:         "localhost:9000/",
 			BaseUploadsDirectory: "uploads/",
 			ImagesDirectory:      "images/",
+			AudiosDirectory:      "audios/",
 		},
 		SQLConfig:   nil,
 		RedisConfig: nil,

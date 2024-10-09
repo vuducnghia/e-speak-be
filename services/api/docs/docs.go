@@ -108,6 +108,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/check-phonemes": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "phonemes"
+                ],
+                "summary": "upload an audio with phoneme",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Audio file to upload",
+                        "name": "audio_file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ground_truth",
+                        "name": "ground_truth",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request: Validation Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Could not save file",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/errors/{id}": {
             "get": {
                 "security": [
@@ -317,6 +361,73 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/vocabularies/detail/{id}": {
+            "get": {
+                "description": "Retrieves the vocabulary entry that matches the specified word or phrase.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vocabularies"
+                ],
+                "summary": "Fetch vocabulary details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vocabulary term to search for",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vocabulary details for the matching term",
+                        "schema": {
+                            "$ref": "#/definitions/models.Vocabulary"
+                        }
+                    }
+                }
+            }
+        },
+        "/vocabularies/search": {
+            "get": {
+                "description": "Retrieve vocabulary entries that match the provided word.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vocabularies"
+                ],
+                "summary": "Search vocabularies by word",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The vocabulary word to search for",
+                        "name": "word",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of matching vocabulary entries",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Vocabulary"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -383,6 +494,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Vocabulary": {
+            "type": "object",
+            "properties": {
+                "audio_url": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "transcript_ipa": {
+                    "type": "string"
+                },
+                "translation": {
                     "type": "string"
                 }
             }
