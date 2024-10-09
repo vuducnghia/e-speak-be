@@ -1,13 +1,12 @@
 package utils
 
 import (
+	application "e-speak-be/internal/config"
 	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
-
-var secretKey = "VerySecretKey"
 
 type TokenPayload struct {
 	SessionId string `json:"session_id"`
@@ -23,7 +22,7 @@ func CreateToken(sessionId string, duration time.Duration) (string, error) {
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-	token, err := jwtToken.SignedString([]byte(secretKey))
+	token, err := jwtToken.SignedString([]byte(application.GetConfig().ApplicationConfig.SecretKey))
 
 	return token, err
 }
@@ -33,7 +32,7 @@ func VerifyToken(token string) (string, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return "", errors.New("unexpected token signing method")
 		}
-		return []byte(secretKey), nil
+		return []byte(application.GetConfig().ApplicationConfig.SecretKey), nil
 	}
 	jwtToken, err := jwt.ParseWithClaims(token, &TokenPayload{}, keyFunc)
 	if err != nil {

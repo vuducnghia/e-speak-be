@@ -4,6 +4,8 @@ import (
 	log "e-speak-be/internal/logger"
 	"errors"
 	"flag"
+	"fmt"
+
 	"github.com/joho/godotenv"
 )
 
@@ -18,7 +20,7 @@ func init() {
 func InitializeApplication() error {
 	InitializeServiceContainer()
 	if err := serviceContainer.InitializeFileService(); err != nil {
-		return errors.New(fmt.Sprintf("error initializing file service: %s", err))
+		return fmt.Errorf("error initializing file service: %w", err)
 	}
 
 	if configuration.SQLConfig != nil {

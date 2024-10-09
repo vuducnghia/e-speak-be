@@ -1,11 +1,11 @@
 package handlers
 
 import (
+	application "e-speak-be/internal/config"
 	"e-speak-be/internal/models"
 	"e-speak-be/internal/utils"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -37,24 +37,23 @@ func LoginUser(c *gin.Context) *gin.Error {
 		return AuthenticationError(err, "wrong password", c)
 	}
 
-	// TODO: replace with config variables
-	accessExpiration := time.Minute * 15
-	refreshExpiration := time.Hour * 24
+	accessDuration := application.GetConfig().ApplicationConfig.RefreshTokenDuration
+	refreshDuration := application.GetConfig().ApplicationConfig.RefreshTokenDuration
 
 	session := &models.Session{
 		UserId:     u.Id,
-		Expiration: refreshExpiration,
+		Expiration: refreshDuration,
 	}
 	if err := session.SetSession(c); err != nil {
 		return InternalError(err, "cannot set session", c)
 	}
 
-	refreshToken, err := utils.CreateToken(session.Id, session.Expiration)
+	refreshToken, err := utils.CreateToken(session.Id, refreshDuration)
 	if err != nil {
 		return InternalError(err, "cannot create refresh token", c)
 	}
 
-	accessToken, err := utils.CreateToken(session.Id, accessExpiration)
+	accessToken, err := utils.CreateToken(session.Id, accessDuration)
 	if err != nil {
 		return InternalError(err, "cannot create access token", c)
 	}
@@ -62,7 +61,7 @@ func LoginUser(c *gin.Context) *gin.Error {
 	c.SetCookie(
 		"access_token",
 		accessToken,
-		int(accessExpiration.Seconds()),
+		int(accessDuration.Seconds()),
 		"/",
 		"localhost",
 		false,
@@ -71,7 +70,7 @@ func LoginUser(c *gin.Context) *gin.Error {
 	c.SetCookie(
 		"refresh_token",
 		refreshToken,
-		int(refreshExpiration.Seconds()),
+		int(refreshDuration.Seconds()),
 		"/",
 		"localhost",
 		false,
@@ -106,7 +105,7 @@ func RefreshToken(c *gin.Context) *gin.Error {
 		return InternalError(err, "faild to get session", c)
 	}
 
-	accessExpiration := time.Minute * 15
+	accessExpiration := application.GetConfig().ApplicationConfig.AccessTokenDuration
 
 	accessToken, err := utils.CreateToken(session.Id, accessExpiration)
 	if err != nil {
