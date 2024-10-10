@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+
 	"github.com/joho/godotenv"
 )
 
@@ -19,7 +20,7 @@ func init() {
 func InitializeApplication() error {
 	InitializeServiceContainer()
 	if err := serviceContainer.InitializeFileService(); err != nil {
-		return errors.New(fmt.Sprintf("error initializing file service: %s", err))
+		return fmt.Errorf("error initializing file service: %w", err)
 	}
 
 	if configuration.SQLConfig != nil {
@@ -28,10 +29,10 @@ func InitializeApplication() error {
 		return errors.New("the mysql database has no configuration")
 	}
 
-	if err := configuration.RedisConfig; err != nil {
+	if configuration.RedisConfig != nil {
 		NewRedisCache(GetConfig().RedisConfig)
 	} else {
-		return errors.New(fmt.Sprintf("error initializing cache service: %s", err))
+		return errors.New("error initializing cache service")
 	}
 	return nil
 }

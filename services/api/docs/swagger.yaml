@@ -89,6 +89,18 @@ paths:
       summary: login user
       tags:
       - auth
+  /auth/refresh_token:
+    post:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: refresh token
+      tags:
+      - auth
   /auth/register:
     post:
       consumes:

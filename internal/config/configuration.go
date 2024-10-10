@@ -5,18 +5,20 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"github.com/rs/zerolog"
 	"os"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/rs/zerolog"
 )
 
 var (
 	configPath    string
 	configuration *Configuration
 
-	ConfigFileError       = errors.New("error reading the configuration file")
-	ConfigFileFormatError = errors.New("configuration file appears to be in the wrong format")
+	ErrConfigFile       = errors.New("error reading the configuration file")
+	ErrConfigFileFormat = errors.New("configuration file appears to be in the wrong format")
 )
 
 type Configuration struct {
@@ -27,11 +29,12 @@ type Configuration struct {
 }
 
 type SystemConfig struct {
-	AccessToken    string `json:"access_token"`
-	RefreshToken   string `json:"refresh_token"`
-	RequestTimeout int    `json:"request_timeout"`
-	LogLevel       string `json:"log_level"`
-	IsDebug        bool   `json:"is_debug"`
+	SecretKey            string        `json:"secret_key"`
+	AccessTokenDuration  time.Duration `json:"access_token_duration"`
+	RefreshTokenDuration time.Duration `json:"refresh_token_duration"`
+	RequestTimeout       int           `json:"request_timeout"`
+	LogLevel             string        `json:"log_level"`
+	IsDebug              bool          `json:"is_debug"`
 }
 
 type DatabaseConfig struct {
@@ -53,10 +56,10 @@ type DirectoryConfig struct {
 func setDefaultConfig() *Configuration {
 	return &Configuration{
 		ApplicationConfig: &SystemConfig{
-			LogLevel:       "info",
-			AccessToken:    "CHANGEMENOW",
-			RefreshToken:   "CHANGEMENOW",
-			RequestTimeout: 300,
+			LogLevel:             "info",
+			AccessTokenDuration:  time.Minute * 15,
+			RefreshTokenDuration: time.Hour * 24 * 7,
+			RequestTimeout:       300,
 		},
 		DirectoryConfig: &DirectoryConfig{
 			BaseAssetUrl:         "localhost:9000/",
@@ -83,7 +86,7 @@ func LoadConfig() error {
 	if strings.HasSuffix(configPath, ".json") {
 		configFile, err := os.Open(configPath)
 		if err != nil {
-			return ConfigFileError
+			return ErrConfigFile
 		}
 		defer func(f *os.File) {
 			cErr := f.Close()
@@ -95,7 +98,7 @@ func LoadConfig() error {
 		decoder := json.NewDecoder(configFile)
 		err = decoder.Decode(configuration)
 		if err != nil {
-			return ConfigFileFormatError
+			return ErrConfigFileFormat
 		}
 	}
 	loadEnvironment(configuration)
@@ -121,9 +124,24 @@ func loadEnvironment(c *Configuration) {
 	if c.ApplicationConfig == nil {
 		c.ApplicationConfig = &SystemConfig{}
 	}
-	c.ApplicationConfig.AccessToken = checkEnvironment("APPLICATION_CONFIG__ACCESS_TOKEN", c.ApplicationConfig.AccessToken)
-	c.ApplicationConfig.RefreshToken = checkEnvironment("APPLICATION_CONFIG__REFRESH_TOKEN", c.ApplicationConfig.RefreshToken)
-	c.ApplicationConfig.LogLevel = checkEnvironment("APPLICATION_CONFIG__LOG_LEVEL", c.ApplicationConfig.LogLevel)
+	c.ApplicationConfig.SecretKey = checkEnvironment(
+		"APPLICATION_CONFIG__SECRET_KEY",
+		c.ApplicationConfig.SecretKey,
+	)
+	if val, ok := os.LookupEnv("APPLICATION_CONFIG__ACCESS_TOKEN_DURATION"); ok {
+		if iVal, pErr := strconv.ParseInt(val, 10, 16); pErr == nil {
+			c.ApplicationConfig.AccessTokenDuration = time.Duration(iVal) * time.Second
+		}
+	}
+	if val, ok := os.LookupEnv("APPLICATION_CONFIG__REFRESH_TOKEN_DURATION"); ok {
+		if iVal, pErr := strconv.ParseInt(val, 10, 16); pErr == nil {
+			c.ApplicationConfig.RefreshTokenDuration = time.Duration(iVal) * time.Second
+		}
+	}
+	c.ApplicationConfig.LogLevel = checkEnvironment(
+		"APPLICATION_CONFIG__LOG_LEVEL",
+		c.ApplicationConfig.LogLevel,
+	)
 	if val, ok := os.LookupEnv("APPLICATION_CONFIG__IS_DEBUG"); ok {
 		if bVal, pErr := strconv.ParseBool(val); pErr == nil {
 			c.ApplicationConfig.IsDebug = bVal
@@ -148,12 +166,21 @@ func loadEnvironment(c *Configuration) {
 		c.RedisConfig = &RedisConfig{}
 	}
 	c.RedisConfig.Addr = checkEnvironment("REDIS_CONFIG__ADDR", c.RedisConfig.Addr)
-	//c.RedisConfig.Password = checkEnvironment("REDIS_CONFIG__PASSWORD", c.RedisConfig.Password)
+	// c.RedisConfig.Password = checkEnvironment("REDIS_CONFIG__PASSWORD", c.RedisConfig.Password)
 
 	if c.DirectoryConfig == nil {
 		c.DirectoryConfig = &DirectoryConfig{}
 	}
-	c.DirectoryConfig.BaseAssetUrl = checkEnvironment("DIRECTORY_CONFIG__BASE_ASSET_URL", c.DirectoryConfig.BaseAssetUrl)
-	c.DirectoryConfig.BaseUploadsDirectory = checkEnvironment("DIRECTORY_CONFIG__BASE_UPLOADS_DIRECTORY", c.DirectoryConfig.BaseUploadsDirectory)
-	c.DirectoryConfig.ImagesDirectory = checkEnvironment("DIRECTORY_CONFIG__IMAGES_DIRECTORY", c.DirectoryConfig.ImagesDirectory)
+	c.DirectoryConfig.BaseAssetUrl = checkEnvironment(
+		"DIRECTORY_CONFIG__BASE_ASSET_URL",
+		c.DirectoryConfig.BaseAssetUrl,
+	)
+	c.DirectoryConfig.BaseUploadsDirectory = checkEnvironment(
+		"DIRECTORY_CONFIG__BASE_UPLOADS_DIRECTORY",
+		c.DirectoryConfig.BaseUploadsDirectory,
+	)
+	c.DirectoryConfig.ImagesDirectory = checkEnvironment(
+		"DIRECTORY_CONFIG__IMAGES_DIRECTORY",
+		c.DirectoryConfig.ImagesDirectory,
+	)
 }
