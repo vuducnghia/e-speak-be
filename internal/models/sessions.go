@@ -22,13 +22,11 @@ func (s *Session) MarshalBinary() ([]byte, error) {
 
 func (s *Session) SetSession(c context.Context) error {
 	s.Id = uuid.NewString()
-	key := fmt.Sprintf("session_%s", s.Id)
-	return cache.Set(c, key, s, s.Expiration).Err()
+	return cache.Set(c, s.getKey(), s, s.Expiration).Err()
 }
 
 func (s *Session) GetSession(c context.Context) error {
-	key := fmt.Sprintf("session_%s", s.Id)
-	val, err := cache.Get(c, key).Result()
+	val, err := cache.Get(c, s.getKey()).Result()
 	if err != nil {
 		return err
 	}
@@ -36,4 +34,12 @@ func (s *Session) GetSession(c context.Context) error {
 	err = json.Unmarshal([]byte(val), &s)
 
 	return err
+}
+
+func (s *Session) DeleteSession(c context.Context) error {
+	return cache.Del(c, s.getKey()).Err()
+}
+
+func (s *Session) getKey() string {
+	return fmt.Sprintf("session_%s", s.Id)
 }

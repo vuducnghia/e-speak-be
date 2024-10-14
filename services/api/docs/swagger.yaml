@@ -89,6 +89,18 @@ paths:
       summary: login user
       tags:
       - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: logout current account
+      tags:
+      - auth
   /auth/refresh_token:
     post:
       consumes:
