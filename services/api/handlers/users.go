@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"e-speak-be/internal/models"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 )
 
 // GetUser		godoc
@@ -24,7 +25,6 @@ func GetUser(c *gin.Context) *gin.Error {
 	if err := u.GetById(c); err != nil {
 		return DatabaseError(err, "the user could not be found", c)
 	}
-
 	c.JSON(http.StatusOK, u)
 	return nil
 }
@@ -82,11 +82,11 @@ func UpdateUser(c *gin.Context) *gin.Error {
 
 // CreateUser 	godoc
 // @Summary		create a user
-// @Tags		auth
+// @Tags		users
 // @Accept		json
 // @Param		user body models.User true "user"
 // @Success 	200
-// @Router		/auth/register [post]
+// @Router		/users [post]
 func CreateUser(c *gin.Context) *gin.Error {
 	u := &models.User{}
 	p := &models.UserPassword{}

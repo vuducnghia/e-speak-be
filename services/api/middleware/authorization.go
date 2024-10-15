@@ -38,6 +38,7 @@ func AuthorizationHandler(c *gin.Context) {
 		)
 	}
 
+	c.Set("userId", session.UserId)
 	c.Set("session", session)
 	c.Next()
 }

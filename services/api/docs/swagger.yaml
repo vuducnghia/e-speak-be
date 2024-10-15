@@ -45,6 +45,13 @@ definitions:
     - email
     - password
     type: object
+  models.UserDictionariesCreateRequest:
+    properties:
+      vocabulary_id:
+        type: string
+    required:
+    - vocabulary_id
+    type: object
   models.Vocabulary:
     properties:
       audio_url:
@@ -111,23 +118,6 @@ paths:
       security:
       - Bearer: []
       summary: refresh token
-      tags:
-      - auth
-  /auth/register:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: user
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.User'
-      responses:
-        "200":
-          description: OK
-      summary: create a user
       tags:
       - auth
   /check-phonemes:
@@ -210,6 +200,43 @@ paths:
       summary: upload an image with thumbnail
       tags:
       - images
+  /user_dictionaries:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: vocabulary id
+        in: body
+        name: vocabulary_id
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserDictionariesCreateRequest'
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: add vocabulary in dictionary
+      tags:
+      - user_dictionaries
+  /user_dictionaries/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user_dictionary id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: delete dictionary
+      tags:
+      - user_dictionaries
   /users:
     get:
       parameters:
@@ -231,6 +258,22 @@ paths:
       security:
       - Bearer: []
       summary: return list users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      responses:
+        "200":
+          description: OK
+      summary: create a user
       tags:
       - users
   /users/{user_id}:

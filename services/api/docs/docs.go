@@ -102,33 +102,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/register": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "create a user",
-                "parameters": [
-                    {
-                        "description": "user",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
         "/check-phonemes": {
             "post": {
                 "consumes": [
@@ -253,6 +226,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/user_dictionaries": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_dictionaries"
+                ],
+                "summary": "add vocabulary in dictionary",
+                "parameters": [
+                    {
+                        "description": "vocabulary id",
+                        "name": "vocabulary_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDictionariesCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/user_dictionaries/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user_dictionaries"
+                ],
+                "summary": "delete dictionary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user_dictionary id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -282,6 +317,31 @@ const docTemplate = `{
                         "description": "search_query",
                         "name": "search_query",
                         "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "create a user",
+                "parameters": [
+                    {
+                        "description": "user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
                     }
                 ],
                 "responses": {
@@ -515,6 +575,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserDictionariesCreateRequest": {
+            "type": "object",
+            "required": [
+                "vocabulary_id"
+            ],
+            "properties": {
+                "vocabulary_id": {
                     "type": "string"
                 }
             }
