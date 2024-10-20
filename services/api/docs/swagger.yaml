@@ -45,12 +45,10 @@ definitions:
     - email
     - password
     type: object
-  models.UserDictionariesCreateRequest:
+  models.UserDictionariesRequest:
     properties:
-      vocabulary_id:
+      wordId:
         type: string
-    required:
-    - vocabulary_id
     type: object
   models.Vocabulary:
     properties:
@@ -118,6 +116,23 @@ paths:
       security:
       - Bearer: []
       summary: refresh token
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      responses:
+        "200":
+          description: OK
+      summary: create a user
       tags:
       - auth
   /check-phonemes:
@@ -200,43 +215,6 @@ paths:
       summary: upload an image with thumbnail
       tags:
       - images
-  /user_dictionaries:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: vocabulary id
-        in: body
-        name: vocabulary_id
-        required: true
-        schema:
-          $ref: '#/definitions/models.UserDictionariesCreateRequest'
-      responses:
-        "200":
-          description: OK
-      security:
-      - Bearer: []
-      summary: add vocabulary in dictionary
-      tags:
-      - user_dictionaries
-  /user_dictionaries/{id}:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: user_dictionary id
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-      security:
-      - Bearer: []
-      summary: delete dictionary
-      tags:
-      - user_dictionaries
   /users:
     get:
       parameters:
@@ -258,22 +236,6 @@ paths:
       security:
       - Bearer: []
       summary: return list users
-      tags:
-      - users
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: user
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.User'
-      responses:
-        "200":
-          description: OK
-      summary: create a user
       tags:
       - users
   /users/{user_id}:
@@ -330,6 +292,53 @@ paths:
       security:
       - Bearer: []
       summary: update a user
+      tags:
+      - users
+  /users/{user_id}/dictionaries:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: word_id
+        in: body
+        name: word_id
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserDictionariesRequest'
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: add vocabulary in dictionary
+      tags:
+      - users
+  /users/{user_id}/dictionaries/{dictionaries_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: user_dictionary id
+        in: path
+        name: dictionaries_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: delete dictionary
       tags:
       - users
   /vocabularies/detail/{id}:

@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // GetUser		godoc
@@ -80,33 +78,33 @@ func UpdateUser(c *gin.Context) *gin.Error {
 	return nil
 }
 
-// CreateUser 	godoc
-// @Summary		create a user
-// @Tags		users
-// @Accept		json
-// @Param		user body models.User true "user"
-// @Success 	200
-// @Router		/users [post]
-func CreateUser(c *gin.Context) *gin.Error {
-	u := &models.User{}
-	p := &models.UserPassword{}
-	if err := c.ShouldBindBodyWith(u, binding.JSON); err != nil {
-		return ValidationError(err, "error validating user entity", c)
-	}
-	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		return ValidationError(err, "error validating user entity", c)
-	}
-	if hash, err := bcrypt.GenerateFromPassword([]byte(p.Password), 10); err != nil {
-		return InternalError(err, "error creating the hashed password", c)
-	} else {
-		u.Password = string(hash)
-	}
-	if err := u.Create(c); err != nil {
-		return DatabaseError(err, "", c)
-	}
-	c.JSON(http.StatusOK, u)
-	return nil
-}
+// // CreateUser 	godoc
+// // @Summary		create a user
+// // @Tags		users
+// // @Accept		json
+// // @Param		user body models.User true "user"
+// // @Success 	200
+// // @Router		/auth/register [post]
+// func CreateUser(c *gin.Context) *gin.Error {
+// 	u := &models.User{}
+// 	p := &models.UserPassword{}
+// 	if err := c.ShouldBindBodyWith(u, binding.JSON); err != nil {
+// 		return ValidationError(err, "error validating user entity", c)
+// 	}
+// 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
+// 		return ValidationError(err, "error validating user entity", c)
+// 	}
+// 	if hash, err := bcrypt.GenerateFromPassword([]byte(p.Password), 10); err != nil {
+// 		return InternalError(err, "error creating the hashed password", c)
+// 	} else {
+// 		u.Password = string(hash)
+// 	}
+// 	if err := u.Create(c); err != nil {
+// 		return DatabaseError(err, "", c)
+// 	}
+// 	c.JSON(http.StatusOK, u)
+// 	return nil
+// }
 
 // DeleteUser 	godoc
 // @Summary		delete a user
@@ -128,5 +126,66 @@ func DeleteUser(c *gin.Context) *gin.Error {
 	}
 
 	c.Status(http.StatusNoContent)
+	return nil
+}
+
+// CreateDictionary		godoc
+// @Summary		add vocabulary in dictionary
+// @Tags		users
+// @Accept		json
+// @Param		user_id path string true "User ID"
+// @Param		word_id body models.UserDictionariesRequest true "word_id"
+// @Success		200
+// @Router		/users/{user_id}/dictionaries [post]
+// @Security 	Bearer
+func CreateDictionary(c *gin.Context) *gin.Error {
+	d := &models.UserDictionaries{}
+	req := &models.UserDictionariesRequest{}
+	userId := c.Param("user_id")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, "user_id is required")
+		return nil
+	}
+	d.VocabularyID = req.WordId
+	d.UserID = string(userId)
+	if err := c.ShouldBindJSON(d); err != nil {
+		return ValidationError(err, "error validating word id", c)
+	}
+	err := d.Create(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "error creating user dictionaries")
+		return DatabaseError(err, "", c)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "create successfully"})
+	return nil
+}
+
+// DeleteDictionary	godoc
+// @Summary		delete dictionary
+// @Tags		users
+// @Accept		json
+// @Param user_id path string true "user id"
+// @Param		dictionaries_id path string true "user_dictionary id"
+// @Success		200
+// @Router		/users/{user_id}/dictionaries/{word_id} [delete]
+// @Security 	Bearer
+func DeleteDictionary(c *gin.Context) *gin.Error {
+	d := &models.UserDictionaries{}
+	d.VocabularyID = c.Param("word_id")
+	if d.VocabularyID == "" {
+		c.JSON(http.StatusBadRequest, "id dictionary is required")
+		return nil
+	}
+	d.UserID = c.Param("user_id")
+
+	if d.UserID == "" {
+		c.JSON(http.StatusBadRequest, "user_id is required")
+		return nil
+	}
+	if err := d.Delete(c); err != nil {
+		c.JSON(http.StatusInternalServerError, "error delete dictionary")
+		return DatabaseError(err, "", c)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Record deleted successfully"})
 	return nil
 }

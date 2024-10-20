@@ -102,6 +102,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/register": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "create a user",
+                "parameters": [
+                    {
+                        "description": "user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/check-phonemes": {
             "post": {
                 "consumes": [
@@ -226,68 +253,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/user_dictionaries": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user_dictionaries"
-                ],
-                "summary": "add vocabulary in dictionary",
-                "parameters": [
-                    {
-                        "description": "vocabulary id",
-                        "name": "vocabulary_id",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UserDictionariesCreateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/user_dictionaries/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user_dictionaries"
-                ],
-                "summary": "delete dictionary",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user_dictionary id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
         "/users": {
             "get": {
                 "security": [
@@ -317,31 +282,6 @@ const docTemplate = `{
                         "description": "search_query",
                         "name": "search_query",
                         "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "create a user",
-                "parameters": [
-                    {
-                        "description": "user",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
                     }
                 ],
                 "responses": {
@@ -432,6 +372,82 @@ const docTemplate = `{
                         "type": "string",
                         "description": "user_id",
                         "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/dictionaries": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "add vocabulary in dictionary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "word_id",
+                        "name": "word_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDictionariesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/dictionaries/{dictionaries_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "delete dictionary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user_dictionary id",
+                        "name": "dictionaries_id",
                         "in": "path",
                         "required": true
                     }
@@ -579,13 +595,10 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UserDictionariesCreateRequest": {
+        "models.UserDictionariesRequest": {
             "type": "object",
-            "required": [
-                "vocabulary_id"
-            ],
             "properties": {
-                "vocabulary_id": {
+                "wordId": {
                     "type": "string"
                 }
             }
