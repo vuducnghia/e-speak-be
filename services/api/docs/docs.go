@@ -406,12 +406,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "word_id",
-                        "name": "word_id",
+                        "description": "dictionaries",
+                        "name": "dictionaries",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UserDictionariesRequest"
+                            "$ref": "#/definitions/models.UserDictionaries"
                         }
                     }
                 ],
@@ -422,7 +422,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{user_id}/dictionaries/{dictionaries_id}": {
+        "/users/{user_id}/dictionaries/{vocabulary_id}": {
             "delete": {
                 "security": [
                     {
@@ -446,8 +446,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "user_dictionary id",
-                        "name": "dictionaries_id",
+                        "description": "vocabulary id",
+                        "name": "vocabulary_id",
                         "in": "path",
                         "required": true
                     }
@@ -595,10 +595,10 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UserDictionariesRequest": {
+        "models.UserDictionaries": {
             "type": "object",
             "properties": {
-                "wordId": {
+                "vocabulary_id": {
                     "type": "string"
                 }
             }

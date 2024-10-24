@@ -15,6 +15,6 @@ func addUserRoutes(r *gin.RouterGroup) {
 		users.PUT("/:user_id", handlers.Handler(handlers.UpdateUser))
 		users.DELETE("/:user_id", handlers.Handler(handlers.DeleteUser))
 		users.POST("/:user_id/dictionaries", handlers.Handler(handlers.CreateDictionary))
-		users.DELETE("/:user_id/dictionaries/:dictionaries_id", handlers.Handler(handlers.DeleteDictionary))
+		users.DELETE("/:user_id/dictionaries/:vocabulary_id", handlers.Handler(handlers.DeleteDictionary))
 	}
 }

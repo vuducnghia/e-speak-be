@@ -45,9 +45,9 @@ definitions:
     - email
     - password
     type: object
-  models.UserDictionariesRequest:
+  models.UserDictionaries:
     properties:
-      wordId:
+      vocabulary_id:
         type: string
     type: object
   models.Vocabulary:
@@ -304,12 +304,12 @@ paths:
         name: user_id
         required: true
         type: string
-      - description: word_id
+      - description: dictionaries
         in: body
-        name: word_id
+        name: dictionaries
         required: true
         schema:
-          $ref: '#/definitions/models.UserDictionariesRequest'
+          $ref: '#/definitions/models.UserDictionaries'
       responses:
         "200":
           description: OK
@@ -318,7 +318,7 @@ paths:
       summary: add vocabulary in dictionary
       tags:
       - users
-  /users/{user_id}/dictionaries/{dictionaries_id}:
+  /users/{user_id}/dictionaries/{vocabulary_id}:
     delete:
       consumes:
       - application/json
@@ -328,9 +328,9 @@ paths:
         name: user_id
         required: true
         type: string
-      - description: user_dictionary id
+      - description: vocabulary id
         in: path
-        name: dictionaries_id
+        name: vocabulary_id
         required: true
         type: string
       responses:

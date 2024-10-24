@@ -129,34 +129,33 @@ func DeleteUser(c *gin.Context) *gin.Error {
 	return nil
 }
 
-// CreateDictionary		godoc
+// CreateDictionary godoc
 // @Summary		add vocabulary in dictionary
 // @Tags		users
 // @Accept		json
 // @Param		user_id path string true "User ID"
-// @Param		word_id body models.UserDictionariesRequest true "word_id"
+// @Param		dictionaries body models.UserDictionaries true "dictionaries"
 // @Success		200
 // @Router		/users/{user_id}/dictionaries [post]
 // @Security 	Bearer
 func CreateDictionary(c *gin.Context) *gin.Error {
-	d := &models.UserDictionaries{}
-	req := &models.UserDictionariesRequest{}
-	userId := c.Param("user_id")
-	if userId == "" {
-		c.JSON(http.StatusBadRequest, "user_id is required")
-		return nil
+	u := &models.UserDictionaries{}
+	id := GetUUIDFromPath("user_id", c)
+	u.UserID = id
+	if id == "" {
+		return BadParameterError(BadRequestParameter, "user_id", c)
 	}
-	d.VocabularyID = req.WordId
-	d.UserID = string(userId)
-	if err := c.ShouldBindJSON(d); err != nil {
-		return ValidationError(err, "error validating word id", c)
+	userId, _ := c.Value("userId").(string)
+	if id != userId {
+		return AuthenticationError(AuthPermissions, "user_id does not match the user's id", c)
 	}
-	err := d.Create(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, "error creating user dictionaries")
-		return DatabaseError(err, "", c)
+	if err := c.ShouldBindJSON(u); err != nil {
+		return ValidationError(err, "error validating user dictionary", c)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "create successfully"})
+	if err := u.Create(c); err != nil {
+		return DatabaseError(err, "an error occurred saving the user's dictionary entity", c)
+	}
+	c.JSON(http.StatusOK, nil)
 	return nil
 }
 
@@ -165,25 +164,27 @@ func CreateDictionary(c *gin.Context) *gin.Error {
 // @Tags		users
 // @Accept		json
 // @Param user_id path string true "user id"
-// @Param		dictionaries_id path string true "user_dictionary id"
+// @Param		vocabulary_id path string true "vocabulary id"
 // @Success		200
-// @Router		/users/{user_id}/dictionaries/{word_id} [delete]
+// @Router		/users/{user_id}/dictionaries/{vocabulary_id} [delete]
 // @Security 	Bearer
 func DeleteDictionary(c *gin.Context) *gin.Error {
-	d := &models.UserDictionaries{}
-	d.VocabularyID = c.Param("word_id")
-	if d.VocabularyID == "" {
+	u := &models.UserDictionaries{}
+	u.VocabularyID = GetUUIDFromPath("vocabulary_id", c)
+	if u.VocabularyID == "" {
 		c.JSON(http.StatusBadRequest, "id dictionary is required")
 		return nil
 	}
-	d.UserID = c.Param("user_id")
-
-	if d.UserID == "" {
-		c.JSON(http.StatusBadRequest, "user_id is required")
-		return nil
+	u.UserID = GetUUIDFromPath("user_id", c)
+	if u.UserID == "" {
+		return BadParameterError(BadRequestParameter, "user_id", c)
 	}
-	if err := d.Delete(c); err != nil {
-		c.JSON(http.StatusInternalServerError, "error delete dictionary")
+	id, _ := c.Value("userId").(string)
+	if u.UserID != id {
+		return AuthenticationError(AuthPermissions, "user_id does not match the user's id", c)
+	}
+	if err := u.Delete(c); err != nil {
+		c.JSON(http.StatusInternalServerError, "error occurred delete dictionary")
 		return DatabaseError(err, "", c)
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Record deleted successfully"})

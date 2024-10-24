@@ -45,7 +45,7 @@ func SetupRouter() *gin.Engine {
 
 	addHeartbeat(NoAuthApi)
 
-	addUserRoutes(NoAuthApi)
+	addUserRoutes(AuthApi)
 	addAuthRoutes(NoAuthApi)
 	addErrorRoutes(NoAuthApi)
 	addImageRoutes(NoAuthApi)
