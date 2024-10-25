@@ -45,6 +45,11 @@ definitions:
     - email
     - password
     type: object
+  models.UserDictionaries:
+    properties:
+      vocabulary_id:
+        type: string
+    type: object
   models.Vocabulary:
     properties:
       audio_url:
@@ -287,6 +292,53 @@ paths:
       security:
       - Bearer: []
       summary: update a user
+      tags:
+      - users
+  /users/{user_id}/dictionaries:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: dictionaries
+        in: body
+        name: dictionaries
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserDictionaries'
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: add vocabulary in dictionary
+      tags:
+      - users
+  /users/{user_id}/dictionaries/{vocabulary_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: vocabulary id
+        in: path
+        name: vocabulary_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: delete dictionary
       tags:
       - users
   /vocabularies/detail/{id}:

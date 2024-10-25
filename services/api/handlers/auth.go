@@ -132,3 +132,31 @@ func LogoutUser(c *gin.Context) *gin.Error {
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 	return nil
 }
+
+// RegisterUser 	godoc
+// @Summary		create a user
+// @Tags		auth
+// @Accept		json
+// @Param		user body models.User true "user"
+// @Success 	200
+// @Router		/auth/register [post]
+func RegisterUser(c *gin.Context) *gin.Error {
+	u := &models.User{}
+	p := &models.UserPassword{}
+	if err := c.ShouldBindBodyWith(u, binding.JSON); err != nil {
+		return ValidationError(err, "error validating user entity", c)
+	}
+	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
+		return ValidationError(err, "error validating user entity", c)
+	}
+	if hash, err := bcrypt.GenerateFromPassword([]byte(p.Password), 10); err != nil {
+		return InternalError(err, "error creating the hashed password", c)
+	} else {
+		u.Password = string(hash)
+	}
+	if err := u.Create(c); err != nil {
+		return DatabaseError(err, "", c)
+	}
+	c.JSON(http.StatusOK, u)
+	return nil
+}

@@ -5,15 +5,17 @@ import (
 	"e-speak-be/internal/models"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 var (
 	BadRequest          = errors.New("invalid request")
 	BadRequestParameter = errors.New("a required path parameter is missing")
+	AuthPermissions     = errors.New("authenticated user does not have enough permissions")
 )
 
 func Handler(h func(c *gin.Context) *gin.Error) gin.HandlerFunc {
