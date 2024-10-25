@@ -42,6 +42,6 @@ func GetListIPA(c *gin.Context) *gin.Error {
 	ipa := []string{"eɪ", "oʊ", "ɔɪ", "aɪ", "aʊ", "tʃ", "dʒ", "ɝ", "ə", "ɛ", "ɚ", "ɑ", "u", "g", "i", "j", "ɔ", "d", "r",
 		"n", "t", "s", "f", "ʌ", "θ", "z", "k", "l", "ʃ", "ð", "w", "ʊ", "ŋ", "ɪ", "ʒ", "b", "v", "h", "æ", "m", "p",
 	}
-	c.JSON(http.StatusOK, ipa)
+	c.JSON(http.StatusOK, gin.H{"data": ipa})
 	return nil
 }
