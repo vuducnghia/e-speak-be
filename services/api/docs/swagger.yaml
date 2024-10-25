@@ -215,6 +215,43 @@ paths:
       summary: upload an image with thumbnail
       tags:
       - images
+  /lessons:
+    get:
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: page_number
+        in: query
+        name: page_number
+        type: string
+      - description: type
+        in: query
+        name: type
+        type: string
+      - description: name
+        in: query
+        name: name
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: return list lessons
+      tags:
+      - lessons
+  /lessons/ipa:
+    get:
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: return list IPA
+      tags:
+      - lessons
   /users:
     get:
       parameters:
