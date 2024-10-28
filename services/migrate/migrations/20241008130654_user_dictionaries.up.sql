@@ -5,8 +5,12 @@ CREATE TABLE user_dictionaries (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+--bun:split
+
 ALTER TABLE user_dictionaries
 ADD FOREIGN KEY (user_id) REFERENCES users (id);
+
+--bun:split
 
 ALTER TABLE user_dictionaries
 ADD FOREIGN KEY (vocabulary_id) REFERENCES vocabularies (id);
