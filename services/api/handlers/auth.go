@@ -42,6 +42,7 @@ func LoginUser(c *gin.Context) *gin.Error {
 
 	session := &models.Session{
 		UserId:     u.Id,
+		ClientIp:   c.ClientIP(),
 		Expiration: refreshDuration,
 	}
 	if err := session.SetSession(c); err != nil {
@@ -87,6 +88,13 @@ func RefreshToken(c *gin.Context) *gin.Error {
 	err = session.GetSession(c)
 	if err != nil {
 		return InternalError(err, "faild to get session", c)
+	}
+
+	if c.ClientIP() != session.ClientIp {
+		session.DeleteSession(c)
+		utils.DeleteCookie(c, "access_token")
+		utils.DeleteCookie(c, "refresh_token")
+		return BadRequestError(nil, "client_ip is not correct", c)
 	}
 
 	accessDuration := application.GetConfig().ApplicationConfig.RefreshTokenDuration

@@ -13,7 +13,8 @@ type Session struct {
 	Id         string        `json:"-"`
 	Expiration time.Duration `json:"-"`
 
-	UserId string `json:"user_id"`
+	UserId   string `json:"user_id"`
+	ClientIp string `json:"client_ip"`
 }
 
 func (s *Session) MarshalBinary() ([]byte, error) {
