@@ -41,7 +41,7 @@ func SearchByWord(c *gin.Context) *gin.Error {
 // @Tags        vocabularies
 // @Accept      json
 // @Produce     json
-// @Param       id path string true "Vocabulary term to search for"
+// @Param       word path string true "Vocabulary term to search for"
 // @Success     200 {object} models.Vocabulary "Vocabulary details for the matching term"
 // @Router      /vocabularies/detail/{word} [get]
 func GetDetailWord(c *gin.Context) *gin.Error {
