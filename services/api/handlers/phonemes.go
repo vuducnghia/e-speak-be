@@ -7,13 +7,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/go-audio/wav"
 	"github.com/google/uuid"
 	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"path/filepath"
 )
 
@@ -50,34 +48,35 @@ func CheckPhonemes(c *gin.Context) *gin.Error {
 		return InternalError(err, "uploaded file audio could not be saved", c)
 	}
 
-	wavFile, err := os.Open(audioFile)
-	if err != nil {
-		return InternalError(err, "an error occurred opening the audio file", c)
-	}
-	defer wavFile.Close()
-
-	decoder := wav.NewDecoder(wavFile)
-	decoder.ReadInfo()
-	if decoder.SampleRate != 16000 {
-		buf, err := decoder.FullPCMBuffer()
-		if err != nil {
-			return InternalError(err, "an error occurred reading the audio file", c)
-		}
-
-		outFile, err := os.Create(audioFile)
-		if err != nil {
-			return InternalError(err, "an error occurred converting the audio file", c)
-		}
-		defer outFile.Close()
-
-		encoder := wav.NewEncoder(outFile, 16000, 16, 1, 1)
-		if err := encoder.Write(buf); err != nil {
-			return InternalError(err, "an error occurred writing new the audio file", c)
-		}
-		if err := encoder.Close(); err != nil {
-			return InternalError(err, "an error occurred closing new the audio file", c)
-		}
-	}
+	//wavFile, err := os.Open(audioFile)
+	//if err != nil {
+	//	return InternalError(err, "an error occurred opening the audio file", c)
+	//}
+	//defer wavFile.Close()
+	//
+	//decoder := wav.NewDecoder(wavFile)
+	//decoder.IsValidFile()
+	//decoder.ReadInfo()
+	//if decoder.SampleRate != 16000 {
+	//	buf, err := decoder.FullPCMBuffer()
+	//	if err != nil {
+	//		return InternalError(err, "an error occurred reading the audio file", c)
+	//	}
+	//
+	//	outFile, err := os.Create(audioFile)
+	//	if err != nil {
+	//		return InternalError(err, "an error occurred converting the audio file", c)
+	//	}
+	//	defer outFile.Close()
+	//
+	//	encoder := wav.NewEncoder(outFile, 16000, 16, 1, 1)
+	//	if err := encoder.Write(buf); err != nil {
+	//		return InternalError(err, "an error occurred writing new the audio file", c)
+	//	}
+	//	if err := encoder.Close(); err != nil {
+	//		return InternalError(err, "an error occurred closing new the audio file", c)
+	//	}
+	//}
 
 	payload := []byte(fmt.Sprintf(`{
 		"audio_file":"%s",
