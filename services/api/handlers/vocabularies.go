@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"database/sql"
 	"e-speak-be/internal/models"
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -40,11 +43,20 @@ func SearchByWord(c *gin.Context) *gin.Error {
 // @Produce     json
 // @Param       id path string true "Vocabulary term to search for"
 // @Success     200 {object} models.Vocabulary "Vocabulary details for the matching term"
-// @Router      /vocabularies/detail/{id} [get]
+// @Router      /vocabularies/detail/{word} [get]
 func GetDetailWord(c *gin.Context) *gin.Error {
 	v := &models.Vocabulary{}
-	v.Id = c.Param("id")
-	v.GetById(c)
+	v.Text = c.Param("word")
+	err := v.GetByText(c)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = fmt.Errorf("word \"%s\" is not found", v.Text)
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return nil
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return nil
+	}
 	c.JSON(http.StatusOK, v)
 	return nil
 }
