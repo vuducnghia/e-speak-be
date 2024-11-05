@@ -39,15 +39,6 @@ func AuthorizationHandler(c *gin.Context) {
 		return
 	}
 
-	if c.ClientIP() != session.ClientIp {
-		// TODO: clear delete session and cookies
-		c.AbortWithStatusJSON(
-			http.StatusUnauthorized,
-			gin.H{"message": "client_ip is not correct"},
-		)
-		return
-	}
-
 	c.Set("userId", session.UserId)
 	c.Set("session", session)
 	c.Next()
