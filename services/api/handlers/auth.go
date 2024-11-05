@@ -89,14 +89,21 @@ func RefreshToken(c *gin.Context) *gin.Error {
 		return InternalError(err, "faild to get session", c)
 	}
 
-	accessExpiration := application.GetConfig().ApplicationConfig.AccessTokenDuration
+	accessDuration := application.GetConfig().ApplicationConfig.RefreshTokenDuration
+	refreshDuration := application.GetConfig().ApplicationConfig.RefreshTokenDuration
 
-	accessToken, err := utils.CreateToken(session.Id, accessExpiration)
+	newAccessToken, err := utils.CreateToken(session.Id, accessDuration)
 	if err != nil {
 		return InternalError(err, "cannot create access token", c)
 	}
 
-	utils.SetCookie(c, "access_token", accessToken, accessExpiration)
+	newRefreshToken, err := utils.CreateToken(session.Id, refreshDuration)
+	if err != nil {
+		return InternalError(err, "cannot create access token", c)
+	}
+
+	utils.SetCookie(c, "access_token", newAccessToken, accessDuration)
+	utils.SetCookie(c, "refresh_token", newRefreshToken, refreshDuration)
 
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 	return nil

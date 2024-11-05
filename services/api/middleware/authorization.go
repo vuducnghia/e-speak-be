@@ -36,6 +36,7 @@ func AuthorizationHandler(c *gin.Context) {
 			http.StatusUnauthorized,
 			gin.H{"message": "session not found", "error": err.Error()},
 		)
+		return
 	}
 
 	c.Set("userId", session.UserId)
