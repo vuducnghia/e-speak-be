@@ -24,8 +24,8 @@ type ImageUploadForm struct {
 // @Param 		image_thumbnail_file 	formData file true "Thumbnail image file to upload"
 // @Param 		metadata 				formData string false "Metadata associated with the image"
 // @Success 	200 {object} models.Image
-// @Failure 	400 {object} gin.H "Bad Request: Validation Error"
-// @Failure 	500 {object} gin.H "Internal Server Error: Could not save file or database error"
+// @Failure 	400 {object} models.ValidationError "Bad Request"
+// @Failure     500 {object} models.InternalError	"Internal Server Error"
 // @Router		/images [post]
 func UploadImage(c *gin.Context) *gin.Error {
 	imageForm := &ImageUploadForm{}
@@ -67,6 +67,8 @@ func UploadImage(c *gin.Context) *gin.Error {
 		}
 
 		c.JSON(http.StatusOK, image)
+	} else {
+		return BadRequestError(FileFormatError, "image must be either a jpg, png, or svg format", c)
 	}
 	return nil
 }

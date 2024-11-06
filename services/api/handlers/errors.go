@@ -7,10 +7,11 @@ import (
 )
 
 // GetError		godoc
-// @Summary		return a error
+// @Summary		return an error
 // @Tags		errors
 // @Param		id path string true "id"
-// @Success		200
+// @Success		200 {object} models.InternalError
+// @Failure 	400 {object} models.ValidationError "Bad Request"
 // @Router		/errors/{id} [get]
 // @Security 	Bearer
 func GetError(c *gin.Context) *gin.Error {

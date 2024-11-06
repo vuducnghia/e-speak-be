@@ -17,14 +17,14 @@ type ErrorInt interface {
 }
 type InternalError struct {
 	bun.BaseModel `bun:"table:errors"`
-	Id            int32     `json:"id" bun:",pk,autoincrement"`
+	Id            int32     `json:"id" bun:",pk,autoincrement" swaggerignore:"true"`
 	Status        int       `json:"status"`
-	Method        string    `json:"method"`
-	Endpoint      string    `json:"endpoint"`
+	Method        string    `json:"method" swaggerignore:"true"`
+	Endpoint      string    `json:"endpoint" swaggerignore:"true"`
 	Type          string    `json:"type"`
 	Message       string    `json:"message"`
 	Details       string    `json:"details"`
-	CreatedAt     time.Time `json:"created_at"`
+	CreatedAt     time.Time `json:"created_at" swaggerignore:"true"`
 }
 type ValidationError struct {
 	*InternalError

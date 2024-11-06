@@ -20,15 +20,29 @@ type PhonemeForm struct {
 	GroundTruth string                `form:"ground_truth" binding:"required"`
 }
 
+type Character struct {
+	Char        string  `json:"char" example:"dʒ"`
+	Confidence  float64 `json:"confidence" example:"0.9997"`
+	StartOffset float64 `json:"start_offset" example:"0.16"`
+	EndOffset   float64 `json:"end_offset" example:"0.24"`
+}
+
+type ResponsePhoneme struct {
+	Characters           []Character `json:"characters"`
+	Confident            float64     `json:"confident" example:"0.92"`
+	GroundTruthBenchmark string      `json:"ground_truth_benchmark" example:"ˈrʌ[ˌ]baʊt dʒi ɛm i ɛf θri naɪn"`
+	Predict              string      `json:"predict" example:"ˈrʌbaʊt dʒi ɛm i ɛf θri naɪn"`
+}
+
 // CheckPhonemes 	godoc
 // @Summary			upload an audio with phoneme
 // @Tags			phonemes
 // @Accept 			multipart/form-data
 // @Param 			audio_file 				formData file true "Audio file to upload"
 // @Param 			ground_truth 			formData string true "ground_truth"
-// @Success 		200
-// @Failure 		400 {object} gin.H "Bad Request: Validation Error"
-// @Failure 		500 {object} gin.H "Internal Server Error: Could not save file"
+// @Success 		200	{object} ResponsePhoneme
+// @Failure 		400 {object} models.InternalError "Bad Request"
+// @Failure     	500 {object} models.InternalError	"Internal Server Error"
 // @Router			/check-phonemes [post]
 func CheckPhonemes(c *gin.Context) *gin.Error {
 	phonemeForm := &PhonemeForm{}

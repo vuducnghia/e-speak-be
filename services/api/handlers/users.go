@@ -11,7 +11,8 @@ import (
 // @Summary		return a user
 // @Tags		users
 // @Param		user_id path string true "user_id"
-// @Success		200
+// @Success		200	{object} models.User
+// @Failure 	400 {object} models.InternalError "Bad Request"
 // @Router		/users/{user_id} [get]
 // @Security 	Bearer
 func GetUser(c *gin.Context) *gin.Error {
@@ -33,14 +34,15 @@ func GetUser(c *gin.Context) *gin.Error {
 // @Param       limit    		query     string  false  "limit"
 // @Param       page_number    	query     string  false  "page_number"
 // @Param       search_query    query     string  false  "search_query"
-// @Success 	200
+// @Success 	200 {object} models.PaginationWrapper
+// @Failure     500 {object} models.InternalError	"Internal Server Error"
 // @Router		/users [get]
 // @Security 	Bearer
 func GetUsers(c *gin.Context) *gin.Error {
 	u := &models.Users{}
 	w := GetPaginationVariables(c)
 	if count, err := u.GetAll(c); err != nil {
-		return c.Error(DatabaseError(err, "could not retrieve user list", c))
+		return DatabaseError(err, "could not retrieve user list", c)
 	} else {
 		w = models.NewPaginationWrapper(u, count, c)
 	}
@@ -55,7 +57,10 @@ func GetUsers(c *gin.Context) *gin.Error {
 // @Accept      json
 // @Param		user_id path string true "user_id"
 // @Param		user body models.User true "user"
-// @Success 	200
+// @Success 	200 {object} models.User
+// @Failure 	400 {object} models.ValidationError "Bad Request"
+// @Failure 	404 {object} models.InternalError	"Entity Not Found"
+// @Failure     500 {object} models.InternalError	"Internal Server Error"
 // @Router		/users/{user_id} [put]
 // @Security 	Bearer
 func UpdateUser(c *gin.Context) *gin.Error {
@@ -111,7 +116,9 @@ func UpdateUser(c *gin.Context) *gin.Error {
 // @Tags 		users
 // @Accept      json
 // @Param		user_id path string true "user_id"
-// @Success 	200
+// @Success 	200 "No Content"
+// @Failure 	400 {object} models.InternalError "Bad Request"
+// @Failure     500 {object} models.InternalError	"Internal Server Error"
 // @Router		/users/{user_id} [delete]
 // @Security 	Bearer
 func DeleteUser(c *gin.Context) *gin.Error {

@@ -15,7 +15,10 @@ import (
 var (
 	BadRequest          = errors.New("invalid request")
 	BadRequestParameter = errors.New("a required path parameter is missing")
+	FileFormatError     = errors.New("file was in the incorrect format")
+	AuthInvalid         = errors.New("authenticated user not set")
 	AuthPermissions     = errors.New("authenticated user does not have enough permissions")
+	EntityNotFound      = errors.New("the entity could not be found")
 )
 
 func Handler(h func(c *gin.Context) *gin.Error) gin.HandlerFunc {
@@ -63,7 +66,7 @@ func ValidationError(e error, m string, c *gin.Context) *gin.Error {
 		return c.Error(models.NewBadRequestError(e, "please refer to the api documentation for proper datetime formats"))
 	case errors.As(e, &validationErrors):
 		for _, fieldErr := range e.(validator.ValidationErrors) {
-			fields[fieldErr.Field()] = fieldErr.Tag() + " - " + fieldErr.Namespace()
+			fields[fieldErr.Field()] = fieldErr.Tag()
 		}
 		return c.Error(models.NewValidationError(e, m, fields))
 	default:

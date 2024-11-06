@@ -10,6 +10,7 @@ import (
 // @Summary		return a status
 // @Tags		heartbeat
 // @Success		200
+// @Failure     500 {object} models.InternalError	"Internal Server Error"
 // @Router		/application/heartbeat [get]
 func GetHeartbeat(c *gin.Context) *gin.Error {
 	if err := models.PingDatabase(); err != nil {

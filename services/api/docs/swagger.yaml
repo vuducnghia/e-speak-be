@@ -1,7 +1,35 @@
 basePath: /api
 definitions:
-  gin.H:
-    additionalProperties: {}
+  handlers.Character:
+    properties:
+      char:
+        example: dʒ
+        type: string
+      confidence:
+        example: 0.9997
+        type: number
+      end_offset:
+        example: 0.24
+        type: number
+      start_offset:
+        example: 0.16
+        type: number
+    type: object
+  handlers.ResponsePhoneme:
+    properties:
+      characters:
+        items:
+          $ref: '#/definitions/handlers.Character'
+        type: array
+      confident:
+        example: 0.92
+        type: number
+      ground_truth_benchmark:
+        example: ˈrʌ[ˌ]baʊt dʒi ɛm i ɛf θri naɪn
+        type: string
+      predict:
+        example: ˈrʌbaʊt dʒi ɛm i ɛf θri naɪn
+        type: string
     type: object
   models.Image:
     properties:
@@ -18,6 +46,33 @@ definitions:
         type: string
       url:
         type: string
+    type: object
+  models.InternalError:
+    properties:
+      details:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+      type:
+        type: string
+    type: object
+  models.PaginationMeta:
+    properties:
+      current_page:
+        type: integer
+      page_count:
+        type: integer
+      total_count:
+        type: integer
+    type: object
+  models.PaginationWrapper:
+    properties:
+      data:
+        type: object
+      metadata:
+        $ref: '#/definitions/models.PaginationMeta'
     type: object
   models.User:
     properties:
@@ -50,6 +105,21 @@ definitions:
       vocabulary_id:
         type: string
     type: object
+  models.ValidationError:
+    properties:
+      details:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+      type:
+        type: string
+      validation_errors:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
   models.Vocabulary:
     properties:
       audio_url:
@@ -72,6 +142,10 @@ paths:
       responses:
         "200":
           description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalError'
       summary: return a status
       tags:
       - heartbeat
@@ -153,14 +227,16 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/handlers.ResponsePhoneme'
         "400":
-          description: 'Bad Request: Validation Error'
+          description: Bad Request
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/models.InternalError'
         "500":
-          description: 'Internal Server Error: Could not save file'
+          description: Internal Server Error
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/models.InternalError'
       summary: upload an audio with phoneme
       tags:
       - phonemes
@@ -175,9 +251,15 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.InternalError'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ValidationError'
       security:
       - Bearer: []
-      summary: return a error
+      summary: return an error
       tags:
       - errors
   /images:
@@ -205,13 +287,13 @@ paths:
           schema:
             $ref: '#/definitions/models.Image'
         "400":
-          description: 'Bad Request: Validation Error'
+          description: Bad Request
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/models.ValidationError'
         "500":
-          description: 'Internal Server Error: Could not save file or database error'
+          description: Internal Server Error
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/models.InternalError'
       summary: upload an image with thumbnail
       tags:
       - images
@@ -237,6 +319,12 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.PaginationWrapper'
+        "404":
+          description: Entity Not Found
+          schema:
+            $ref: '#/definitions/models.InternalError'
       security:
       - Bearer: []
       summary: return list lessons
@@ -270,6 +358,12 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.PaginationWrapper'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalError'
       security:
       - Bearer: []
       summary: return list users
@@ -287,7 +381,15 @@ paths:
         type: string
       responses:
         "200":
-          description: OK
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.InternalError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalError'
       security:
       - Bearer: []
       summary: delete a user
@@ -303,6 +405,12 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.InternalError'
       security:
       - Bearer: []
       summary: return a user
@@ -326,6 +434,20 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ValidationError'
+        "404":
+          description: Entity Not Found
+          schema:
+            $ref: '#/definitions/models.InternalError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalError'
       security:
       - Bearer: []
       summary: update a user

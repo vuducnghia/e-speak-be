@@ -12,9 +12,10 @@ type PaginationMeta struct {
 	TotalCount  int `json:"total_count"`
 }
 
+// PaginationWrapper godoc
 type PaginationWrapper struct {
 	PaginationMeta `json:"metadata"`
-	Data           interface{} `json:"data"`
+	Data           interface{} `json:"data" swaggertype:"object"`
 }
 
 func NewPaginationWrapper(data interface{}, count int, c *gin.Context) *PaginationWrapper {

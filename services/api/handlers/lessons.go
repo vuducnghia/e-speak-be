@@ -13,7 +13,8 @@ import (
 // @Param       page_number    	query     string  false  "page_number"
 // @Param       type    query     string  false  "type"
 // @Param       name    query     string  false  "name"
-// @Success		200
+// @Success 	200 {object} models.PaginationWrapper
+// @Failure 	404 {object} models.InternalError	"Entity Not Found"
 // @Router		/lessons [get]
 // @Security 	Bearer
 func GetLessons(c *gin.Context) *gin.Error {

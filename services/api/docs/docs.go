@@ -24,6 +24,12 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
                     }
                 }
             }
@@ -156,18 +162,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ResponsePhoneme"
+                        }
                     },
                     "400": {
-                        "description": "Bad Request: Validation Error",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/gin.H"
+                            "$ref": "#/definitions/models.InternalError"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error: Could not save file",
+                        "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/gin.H"
+                            "$ref": "#/definitions/models.InternalError"
                         }
                     }
                 }
@@ -183,7 +192,7 @@ const docTemplate = `{
                 "tags": [
                     "errors"
                 ],
-                "summary": "return a error",
+                "summary": "return an error",
                 "parameters": [
                     {
                         "type": "string",
@@ -195,7 +204,16 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationError"
+                        }
                     }
                 }
             }
@@ -239,15 +257,15 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request: Validation Error",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/gin.H"
+                            "$ref": "#/definitions/models.ValidationError"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error: Could not save file or database error",
+                        "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/gin.H"
+                            "$ref": "#/definitions/models.InternalError"
                         }
                     }
                 }
@@ -292,7 +310,16 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PaginationWrapper"
+                        }
+                    },
+                    "404": {
+                        "description": "Entity Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
                     }
                 }
             }
@@ -348,7 +375,16 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PaginationWrapper"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
                     }
                 }
             }
@@ -375,7 +411,16 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
                     }
                 }
             },
@@ -412,7 +457,28 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationError"
+                        }
+                    },
+                    "404": {
+                        "description": "Entity Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
                     }
                 }
             },
@@ -440,7 +506,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
                     }
                 }
             }
@@ -590,9 +668,49 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "gin.H": {
+        "handlers.Character": {
             "type": "object",
-            "additionalProperties": {}
+            "properties": {
+                "char": {
+                    "type": "string",
+                    "example": "dʒ"
+                },
+                "confidence": {
+                    "type": "number",
+                    "example": 0.9997
+                },
+                "end_offset": {
+                    "type": "number",
+                    "example": 0.24
+                },
+                "start_offset": {
+                    "type": "number",
+                    "example": 0.16
+                }
+            }
+        },
+        "handlers.ResponsePhoneme": {
+            "type": "object",
+            "properties": {
+                "characters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.Character"
+                    }
+                },
+                "confident": {
+                    "type": "number",
+                    "example": 0.92
+                },
+                "ground_truth_benchmark": {
+                    "type": "string",
+                    "example": "ˈrʌ[ˌ]baʊt dʒi ɛm i ɛf θri naɪn"
+                },
+                "predict": {
+                    "type": "string",
+                    "example": "ˈrʌbaʊt dʒi ɛm i ɛf θri naɪn"
+                }
+            }
         },
         "models.Image": {
             "type": "object",
@@ -615,6 +733,48 @@ const docTemplate = `{
                 },
                 "url": {
                     "type": "string"
+                }
+            }
+        },
+        "models.InternalError": {
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PaginationMeta": {
+            "type": "object",
+            "properties": {
+                "current_page": {
+                    "type": "integer"
+                },
+                "page_count": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.PaginationWrapper": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/models.PaginationMeta"
                 }
             }
         },
@@ -662,6 +822,29 @@ const docTemplate = `{
             "properties": {
                 "vocabulary_id": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ValidationError": {
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "validation_errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },
