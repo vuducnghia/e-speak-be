@@ -1,1 +1,1 @@
-ALTER TABLE vocabularies ADD INDEX text(text) USING BTREE;
+ALTER TABLE vocabularies ADD INDEX idx_vocabularies_text(text) USING BTREE;

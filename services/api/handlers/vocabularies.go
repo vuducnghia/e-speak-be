@@ -50,12 +50,9 @@ func GetDetailWord(c *gin.Context) *gin.Error {
 	err := v.GetByText(c)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			err = fmt.Errorf("word \"%s\" is not found", v.Text)
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return nil
+			return EntityNotFoundError(err, fmt.Sprintf("word \"%s\" is not found", v.Text), c)
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return nil
+		return InternalError(err, "failed to get by word", c)
 	}
 	c.JSON(http.StatusOK, v)
 	return nil
