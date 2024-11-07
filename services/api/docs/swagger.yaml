@@ -500,7 +500,7 @@ paths:
       summary: delete dictionary
       tags:
       - users
-  /vocabularies/detail/{id}:
+  /vocabularies/detail/{word}:
     get:
       consumes:
       - application/json
@@ -509,7 +509,7 @@ paths:
       parameters:
       - description: Vocabulary term to search for
         in: path
-        name: id
+        name: word
         required: true
         type: string
       produces:

@@ -29,3 +29,7 @@ func (v *Vocabularies) SearchByWord(word string, c *gin.Context) error {
 func (v *Vocabulary) GetById(c *gin.Context) error {
 	return db.NewSelect().Model(v).WherePK("id").Scan(c)
 }
+
+func (v *Vocabulary) GetByText(c *gin.Context) error {
+	return db.NewSelect().Model(v).Where("text = ?", v.Text).Scan(c)
+}

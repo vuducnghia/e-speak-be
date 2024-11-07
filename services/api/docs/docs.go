@@ -599,7 +599,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/vocabularies/detail/{id}": {
+        "/vocabularies/detail/{word}": {
             "get": {
                 "description": "Retrieves the vocabulary entry that matches the specified word or phrase.",
                 "consumes": [
@@ -616,7 +616,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Vocabulary term to search for",
-                        "name": "id",
+                        "name": "word",
                         "in": "path",
                         "required": true
                     }
