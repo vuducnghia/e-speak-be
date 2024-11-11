@@ -124,7 +124,13 @@ definitions:
     properties:
       audio_url:
         type: string
+      image:
+        type: string
+      level:
+        type: string
       text:
+        type: string
+      topic:
         type: string
       transcript_ipa:
         type: string
@@ -500,6 +506,48 @@ paths:
       summary: delete dictionary
       tags:
       - users
+  /vocabularies:
+    get:
+      description: Retrieve vocabulary entries that match the provided word.
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: page_number
+        in: query
+        name: page_number
+        type: string
+      - description: 'Ex: Personal Traits'
+        in: query
+        name: topic
+        type: string
+      - description: 'Ex: A1'
+        in: query
+        name: level
+        type: string
+      - description: 'Ex: persistent'
+        in: query
+        name: text
+        type: string
+      - description: is_strict = true return only one match
+        in: query
+        name: is_strict
+        type: boolean
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PaginationWrapper'
+        "404":
+          description: Entity Not Found
+          schema:
+            $ref: '#/definitions/models.InternalError'
+      security:
+      - Bearer: []
+      summary: Search vocabularies by word
+      tags:
+      - vocabularies
   /vocabularies/detail/{word}:
     get:
       consumes:

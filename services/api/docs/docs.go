@@ -599,6 +599,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/vocabularies": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve vocabulary entries that match the provided word.",
+                "tags": [
+                    "vocabularies"
+                ],
+                "summary": "Search vocabularies by word",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page_number",
+                        "name": "page_number",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ex: Personal Traits",
+                        "name": "topic",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ex: A1",
+                        "name": "level",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ex: persistent",
+                        "name": "text",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "is_strict = true return only one match",
+                        "name": "is_strict",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PaginationWrapper"
+                        }
+                    },
+                    "404": {
+                        "description": "Entity Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/vocabularies/detail/{word}": {
             "get": {
                 "description": "Retrieves the vocabulary entry that matches the specified word or phrase.",
@@ -854,7 +920,16 @@ const docTemplate = `{
                 "audio_url": {
                     "type": "string"
                 },
+                "image": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "string"
+                },
                 "text": {
+                    "type": "string"
+                },
+                "topic": {
                     "type": "string"
                 },
                 "transcript_ipa": {

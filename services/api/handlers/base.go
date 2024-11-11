@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -95,4 +96,8 @@ func GetPaginationVariables(c *gin.Context) *models.PaginationWrapper {
 	context.WithValue(c, "limit", c.GetInt("limit"))
 	context.WithValue(c, "search_query", c.GetInt("search_query"))
 	return pw
+}
+
+func GetBoolFromUrl(k string, c *gin.Context) bool {
+	return strings.ToLower(c.DefaultQuery(k, "false")) != "false"
 }
