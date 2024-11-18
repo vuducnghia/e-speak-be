@@ -2,7 +2,6 @@ package models
 
 import (
 	log "e-speak-be/internal/logger"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/uptrace/bun"
 	"net/http"
@@ -36,7 +35,7 @@ func (e *InternalError) TableName() string {
 }
 
 func (e *InternalError) Error() string {
-	return fmt.Sprintf("%s for more details refer to: %d", e.Message, e.Id)
+	return e.Message
 }
 
 func (e *InternalError) GetStatus() int {
