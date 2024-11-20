@@ -18,7 +18,7 @@ import (
 // @Accept      json
 // @Param		user body models.UserCredentials true "user"
 // @Success 	200
-// @Failure		422 {object} models.InternalError	"error validating"
+// @Failure		422 {object} models.ValidationError	"error validating"
 // @Failure		401 {object} models.InternalError	"wrong username or password"
 // @Router		/auth/login [post]
 // @Security 	Bearer
@@ -149,7 +149,7 @@ func LogoutUser(c *gin.Context) *gin.Error {
 // @Param		user body models.User true "user"
 // @Success 	200
 // @Failure 	422 {object} models.ValidationError "error validating"
-// @Failure 	400 {object} models.ValidationError "duplicate email"
+// @Failure 	400 {object} models.InternalError "duplicate email"
 // @Router		/auth/register [post]
 func RegisterUser(c *gin.Context) *gin.Error {
 	u := &models.User{}

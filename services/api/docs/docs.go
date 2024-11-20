@@ -62,6 +62,18 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "401": {
+                        "description": "wrong username or password",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    },
+                    "422": {
+                        "description": "error validating",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationError"
+                        }
                     }
                 }
             }
@@ -83,6 +95,12 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "400": {
+                        "description": "invalid refresh_token",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
                     }
                 }
             }
@@ -104,6 +122,12 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "400": {
+                        "description": "invalid refresh_token",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
                     }
                 }
             }
@@ -131,6 +155,18 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "400": {
+                        "description": "duplicate email",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    },
+                    "422": {
+                        "description": "error validating",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationError"
+                        }
                     }
                 }
             }
@@ -879,7 +915,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 6
                 }
             }
         },
@@ -920,7 +957,7 @@ const docTemplate = `{
                 "audio_url": {
                     "type": "string"
                 },
-                "image": {
+                "image_url": {
                     "type": "string"
                 },
                 "level": {
