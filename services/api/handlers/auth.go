@@ -18,6 +18,8 @@ import (
 // @Accept      json
 // @Param		user body models.UserCredentials true "user"
 // @Success 	200
+// @Failure		422 {object} models.InternalError	"error validating"
+// @Failure		401 {object} models.InternalError	"wrong username or password"
 // @Router		/auth/login [post]
 // @Security 	Bearer
 func LoginUser(c *gin.Context) *gin.Error {
@@ -66,8 +68,8 @@ func LoginUser(c *gin.Context) *gin.Error {
 // @Tags		auth
 // @Accept      json
 // @Success 	200
-// @Failure 	422 {object} models.InternalError	"missing refresh_token"
-// @Failure 	422 {object} models.InternalError	"invalid refresh_token"
+// @Failure 	400 {object} models.InternalError	"missing refresh_token"
+// @Failure 	400 {object} models.InternalError	"invalid refresh_token"
 // @Router		/auth/refresh_token [post]
 // @Security 	Bearer
 func RefreshToken(c *gin.Context) *gin.Error {
@@ -112,8 +114,8 @@ func RefreshToken(c *gin.Context) *gin.Error {
 // @Tags		auth
 // @Accept      json
 // @Success 	200
-// @Failure 	422 {object} models.InternalError	"missing refresh_token"
-// @Failure 	422 {object} models.InternalError	"invalid refresh_token"
+// @Failure 	400 {object} models.InternalError	"missing refresh_token"
+// @Failure 	400 {object} models.InternalError	"invalid refresh_token"
 // @Router		/auth/logout [post]
 // @Security 	Bearer
 func LogoutUser(c *gin.Context) *gin.Error {
@@ -147,7 +149,7 @@ func LogoutUser(c *gin.Context) *gin.Error {
 // @Param		user body models.User true "user"
 // @Success 	200
 // @Failure 	422 {object} models.ValidationError "error validating"
-// @Failure 	422 {object} models.ValidationError "duplicate email"
+// @Failure 	400 {object} models.ValidationError "duplicate email"
 // @Router		/auth/register [post]
 func RegisterUser(c *gin.Context) *gin.Error {
 	u := &models.User{}
@@ -165,7 +167,7 @@ func RegisterUser(c *gin.Context) *gin.Error {
 	}
 	if err := u.Create(c); err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
-			return ValidationError(err, "The email address is already registered", c)
+			return BadRequestError(err, "the email address is already registered", c)
 		}
 		return DatabaseError(err, "", c)
 	}
