@@ -1,27 +1,28 @@
 package models
 
 import (
-	"github.com/gin-gonic/gin"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserPassword struct {
-	Password string `json:"password" binding:"required"`
+	Password string `json:"password" binding:"required,min=6"`
 }
 type UserCredentials struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
 }
 type User struct {
 	BaseModelUUID
 	Name     string `json:"username" binding:"required"`
 	Password string `json:"-"`
 	GoogleId string `json:"google_id"`
-	Email    string `json:"email" binding:"required"`
-	Avatar   string `json:"avatar"`
+	Email    string `json:"email" binding:"required,email"`
+	Avatar   string `json:"avatar,omitempty"`
 	IsPay    bool   `json:"is_pay"`
 	BaseModelAudit
-	//BaseModelSoftDelete
+	// BaseModelSoftDelete
 
 	//	relations
 }
