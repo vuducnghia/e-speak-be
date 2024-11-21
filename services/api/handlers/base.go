@@ -59,15 +59,44 @@ func InternalError(e error, message string, c *gin.Context) *gin.Error {
 }
 
 func ValidationError(e error, m string, c *gin.Context) *gin.Error {
-	fields := make(map[string]string)
-	var parseError *time.ParseError
-	var validationErrors validator.ValidationErrors
+	var (
+		fields           []map[string]string
+		parseError       *time.ParseError
+		validationErrors validator.ValidationErrors
+	)
+
 	switch {
 	case errors.As(e, &parseError):
 		return c.Error(models.NewBadRequestError(e, "please refer to the api documentation for proper datetime formats"))
 	case errors.As(e, &validationErrors):
 		for _, fieldErr := range e.(validator.ValidationErrors) {
-			fields[fieldErr.Field()] = fieldErr.Tag()
+			message := ""
+			tag := fieldErr.Tag()
+			field := fieldErr.Field()
+			switch tag {
+			case "required":
+				message = field + " is required"
+			case "email":
+				message = "Invalid email format"
+			case "min":
+				message = field + " must be at least " + fieldErr.Param() + " characters"
+			case "max":
+				message = field + " must not exceed " + fieldErr.Param() + " characters"
+			case "datetime":
+				message = field + " must follow the format " + fieldErr.Param()
+			case "oneof":
+				message = field + " must be one of " + fieldErr.Param()
+			case "lte":
+				message = field + "must be greater than or equal to " + fieldErr.Param()
+			case "gte":
+				message = field + "must be less than or equal to " + fieldErr.Param()
+			default:
+				message = "Validation failed"
+			}
+			fields = append(fields, map[string]string{
+				field:     tag,
+				"message": message,
+			})
 		}
 		return c.Error(models.NewValidationError(e, m, fields))
 	default:
