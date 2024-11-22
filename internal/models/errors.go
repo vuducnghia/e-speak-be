@@ -27,7 +27,7 @@ type InternalError struct {
 }
 type ValidationError struct {
 	*InternalError
-	ValidationErrors map[string]string `json:"validation_errors"`
+	ValidationErrors []map[string]string `json:"validation_errors"`
 }
 
 func (e *InternalError) TableName() string {
@@ -127,7 +127,7 @@ func NewInternalError(e error, m string) *InternalError {
 	return newServerError("internal_error", e.Error(), m)
 }
 
-func NewValidationError(e error, m string, fields map[string]string) *ValidationError {
+func NewValidationError(e error, m string, fields []map[string]string) *ValidationError {
 	return &ValidationError{
 		newBadRequest("validation_error", e.Error(), m), fields,
 	}
