@@ -75,15 +75,6 @@ func newBadRequest(c string, d string, m string) *InternalError {
 	}
 }
 
-func newValidationError(c string, d string, m string) *InternalError {
-	return &InternalError{
-		Status: http.StatusUnprocessableEntity,
-		Type: c,
-		Details: d,
-		Message: m,
-	}
-}
-
 func newServerError(c string, d string, m string) *InternalError {
 	return &InternalError{
 		Status:  http.StatusInternalServerError,
@@ -138,6 +129,6 @@ func NewInternalError(e error, m string) *InternalError {
 
 func NewValidationError(e error, m string, fields map[string]string) *ValidationError {
 	return &ValidationError{
-		newValidationError("validation_error", e.Error(), m), fields,
+		newBadRequest("validation_error", e.Error(), m), fields,
 	}
 }

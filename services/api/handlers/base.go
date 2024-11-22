@@ -64,12 +64,7 @@ func ValidationError(e error, m string, c *gin.Context) *gin.Error {
 	var validationErrors validator.ValidationErrors
 	switch {
 	case errors.As(e, &parseError):
-		return c.Error(
-			models.NewBadRequestError(
-				e,
-				"please refer to the api documentation for proper datetime formats",
-			),
-		)
+		return c.Error(models.NewBadRequestError(e, "please refer to the api documentation for proper datetime formats"))
 	case errors.As(e, &validationErrors):
 		for _, fieldErr := range e.(validator.ValidationErrors) {
 			fields[fieldErr.Field()] = fieldErr.Tag()
