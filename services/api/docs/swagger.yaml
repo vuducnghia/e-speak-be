@@ -95,6 +95,7 @@ definitions:
       email:
         type: string
       password:
+        minLength: 6
         type: string
     required:
     - email
@@ -124,7 +125,7 @@ definitions:
     properties:
       audio_url:
         type: string
-      image:
+      image_url:
         type: string
       level:
         type: string
@@ -169,6 +170,14 @@ paths:
       responses:
         "200":
           description: OK
+        "401":
+          description: wrong username or password
+          schema:
+            $ref: '#/definitions/models.InternalError'
+        "422":
+          description: error validating
+          schema:
+            $ref: '#/definitions/models.ValidationError'
       security:
       - Bearer: []
       summary: login user
@@ -181,6 +190,10 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: invalid refresh_token
+          schema:
+            $ref: '#/definitions/models.InternalError'
       security:
       - Bearer: []
       summary: logout current account
@@ -193,6 +206,10 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: invalid refresh_token
+          schema:
+            $ref: '#/definitions/models.InternalError'
       security:
       - Bearer: []
       summary: refresh token
@@ -212,6 +229,14 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: duplicate email
+          schema:
+            $ref: '#/definitions/models.InternalError'
+        "422":
+          description: error validating
+          schema:
+            $ref: '#/definitions/models.ValidationError'
       summary: create a user
       tags:
       - auth

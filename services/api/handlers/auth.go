@@ -4,11 +4,11 @@ import (
 	application "e-speak-be/internal/config"
 	"e-speak-be/internal/models"
 	"e-speak-be/internal/utils"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,6 +18,8 @@ import (
 // @Accept      json
 // @Param		user body models.UserCredentials true "user"
 // @Success 	200
+// @Failure		422 {object} models.ValidationError	"error validating"
+// @Failure		401 {object} models.InternalError	"wrong username or password"
 // @Router		/auth/login [post]
 // @Security 	Bearer
 func LoginUser(c *gin.Context) *gin.Error {
@@ -27,14 +29,10 @@ func LoginUser(c *gin.Context) *gin.Error {
 	}
 	u := &models.User{Email: credentials.Email}
 	if err := u.GetByEmail(c); err != nil {
-		return BadParameterError(
-			err,
-			fmt.Sprintf("err not exist user with email: '%s'", credentials.Email),
-			c,
-		)
+		return BadParameterError(err, "wrong username or password", c)
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(credentials.Password)); err != nil {
-		return AuthenticationError(err, "wrong password", c)
+		return AuthenticationError(err, "wrong username or password", c)
 	}
 
 	accessDuration := application.GetConfig().ApplicationConfig.RefreshTokenDuration
@@ -70,6 +68,8 @@ func LoginUser(c *gin.Context) *gin.Error {
 // @Tags		auth
 // @Accept      json
 // @Success 	200
+// @Failure 	400 {object} models.InternalError	"missing refresh_token"
+// @Failure 	400 {object} models.InternalError	"invalid refresh_token"
 // @Router		/auth/refresh_token [post]
 // @Security 	Bearer
 func RefreshToken(c *gin.Context) *gin.Error {
@@ -114,6 +114,8 @@ func RefreshToken(c *gin.Context) *gin.Error {
 // @Tags		auth
 // @Accept      json
 // @Success 	200
+// @Failure 	400 {object} models.InternalError	"missing refresh_token"
+// @Failure 	400 {object} models.InternalError	"invalid refresh_token"
 // @Router		/auth/logout [post]
 // @Security 	Bearer
 func LogoutUser(c *gin.Context) *gin.Error {
@@ -146,6 +148,8 @@ func LogoutUser(c *gin.Context) *gin.Error {
 // @Accept		json
 // @Param		user body models.User true "user"
 // @Success 	200
+// @Failure 	422 {object} models.ValidationError "error validating"
+// @Failure 	400 {object} models.InternalError "duplicate email"
 // @Router		/auth/register [post]
 func RegisterUser(c *gin.Context) *gin.Error {
 	u := &models.User{}
@@ -154,7 +158,7 @@ func RegisterUser(c *gin.Context) *gin.Error {
 		return ValidationError(err, "error validating user entity", c)
 	}
 	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		return ValidationError(err, "error validating user entity", c)
+		return ValidationError(err, "error validating password entity", c)
 	}
 	if hash, err := bcrypt.GenerateFromPassword([]byte(p.Password), 10); err != nil {
 		return InternalError(err, "error creating the hashed password", c)
@@ -162,6 +166,9 @@ func RegisterUser(c *gin.Context) *gin.Error {
 		u.Password = string(hash)
 	}
 	if err := u.Create(c); err != nil {
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
+			return BadRequestError(err, "the email address is already registered", c)
+		}
 		return DatabaseError(err, "", c)
 	}
 	c.JSON(http.StatusOK, u)

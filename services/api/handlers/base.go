@@ -100,7 +100,9 @@ func ValidationError(e error, m string, c *gin.Context) *gin.Error {
 		}
 		return c.Error(models.NewValidationError(e, m, fields))
 	default:
-		return c.Error(models.NewBadRequestError(e, "unspecified error occurred with the request binding"))
+		return c.Error(
+			models.NewBadRequestError(e, m),
+		)
 	}
 }
 
