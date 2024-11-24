@@ -117,26 +117,11 @@ definitions:
       type:
         type: string
       validation_errors:
-        additionalProperties:
-          type: string
-        type: object
-    type: object
-  models.Vocabulary:
-    properties:
-      audio_url:
-        type: string
-      image_url:
-        type: string
-      level:
-        type: string
-      text:
-        type: string
-      topic:
-        type: string
-      transcript_ipa:
-        type: string
-      translation:
-        type: string
+        items:
+          additionalProperties:
+            type: string
+          type: object
+        type: array
     type: object
 host: localhost:9000
 info:
@@ -570,51 +555,6 @@ paths:
             $ref: '#/definitions/models.InternalError'
       security:
       - Bearer: []
-      summary: Search vocabularies by word
-      tags:
-      - vocabularies
-  /vocabularies/detail/{word}:
-    get:
-      consumes:
-      - application/json
-      description: Retrieves the vocabulary entry that matches the specified word
-        or phrase.
-      parameters:
-      - description: Vocabulary term to search for
-        in: path
-        name: word
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Vocabulary details for the matching term
-          schema:
-            $ref: '#/definitions/models.Vocabulary'
-      summary: Fetch vocabulary details
-      tags:
-      - vocabularies
-  /vocabularies/search:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve vocabulary entries that match the provided word.
-      parameters:
-      - description: The vocabulary word to search for
-        in: query
-        name: word
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of matching vocabulary entries
-          schema:
-            items:
-              $ref: '#/definitions/models.Vocabulary'
-            type: array
       summary: Search vocabularies by word
       tags:
       - vocabularies

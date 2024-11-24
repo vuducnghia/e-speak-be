@@ -693,73 +693,6 @@
                     }
                 }
             }
-        },
-        "/vocabularies/detail/{word}": {
-            "get": {
-                "description": "Retrieves the vocabulary entry that matches the specified word or phrase.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "vocabularies"
-                ],
-                "summary": "Fetch vocabulary details",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Vocabulary term to search for",
-                        "name": "word",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Vocabulary details for the matching term",
-                        "schema": {
-                            "$ref": "#/definitions/models.Vocabulary"
-                        }
-                    }
-                }
-            }
-        },
-        "/vocabularies/search": {
-            "get": {
-                "description": "Retrieve vocabulary entries that match the provided word.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "vocabularies"
-                ],
-                "summary": "Search vocabularies by word",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "The vocabulary word to search for",
-                        "name": "word",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of matching vocabulary entries",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Vocabulary"
-                            }
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -937,36 +870,13 @@
                     "type": "string"
                 },
                 "validation_errors": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
-                }
-            }
-        },
-        "models.Vocabulary": {
-            "type": "object",
-            "properties": {
-                "audio_url": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "level": {
-                    "type": "string"
-                },
-                "text": {
-                    "type": "string"
-                },
-                "topic": {
-                    "type": "string"
-                },
-                "transcript_ipa": {
-                    "type": "string"
-                },
-                "translation": {
-                    "type": "string"
                 }
             }
         }
