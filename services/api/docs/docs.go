@@ -635,6 +635,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{user_id}/stories": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "doing a story",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Story",
+                        "name": "story",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserStory"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserStory"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/vocabularies": {
             "get": {
                 "security": [
@@ -813,6 +867,88 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Sentence": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "integer"
+                },
+                "start": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Story": {
+            "type": "object",
+            "properties": {
+                "audio_url": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "sentences": {
+                    "description": "list sentences include vtt",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Sentence"
+                    }
+                },
+                "source": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "transcription": {
+                    "type": "string"
+                },
+                "translation": {
+                    "type": "string"
+                },
+                "views": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.StoryLevel": {
+            "type": "string",
+            "enum": [
+                "beginner",
+                "intermediate",
+                "advanced",
+                "proficient"
+            ],
+            "x-enum-varnames": [
+                "Beginner",
+                "Intermediate",
+                "Advanced",
+                "Proficient"
+            ]
+        },
+        "models.StoryStatus": {
+            "type": "string",
+            "enum": [
+                "in_progress",
+                "completed"
+            ],
+            "x-enum-varnames": [
+                "InProgress",
+                "Completed"
+            ]
+        },
         "models.User": {
             "type": "object",
             "required": [
@@ -858,6 +994,59 @@ const docTemplate = `{
             "properties": {
                 "vocabulary_id": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UserStory": {
+            "type": "object",
+            "required": [
+                "level"
+            ],
+            "properties": {
+                "level": {
+                    "$ref": "#/definitions/models.StoryLevel"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "sentences": {
+                    "description": "list sentences include vtt",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserStorySentence"
+                    }
+                },
+                "status": {
+                    "$ref": "#/definitions/models.StoryStatus"
+                },
+                "story": {
+                    "$ref": "#/definitions/models.Story"
+                },
+                "story_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserStorySentence": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "integer"
+                },
+                "start": {
+                    "type": "integer"
+                },
+                "user_answers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

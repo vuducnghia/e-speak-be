@@ -74,6 +74,63 @@ definitions:
       metadata:
         $ref: '#/definitions/models.PaginationMeta'
     type: object
+  models.Sentence:
+    properties:
+      content:
+        type: string
+      end:
+        type: integer
+      start:
+        type: integer
+    type: object
+  models.Story:
+    properties:
+      audio_url:
+        type: string
+      author:
+        type: string
+      description:
+        type: string
+      duration:
+        type: integer
+      image_url:
+        type: string
+      sentences:
+        description: list sentences include vtt
+        items:
+          $ref: '#/definitions/models.Sentence'
+        type: array
+      source:
+        type: string
+      title:
+        type: string
+      transcription:
+        type: string
+      translation:
+        type: string
+      views:
+        type: integer
+    type: object
+  models.StoryLevel:
+    enum:
+    - beginner
+    - intermediate
+    - advanced
+    - proficient
+    type: string
+    x-enum-varnames:
+    - Beginner
+    - Intermediate
+    - Advanced
+    - Proficient
+  models.StoryStatus:
+    enum:
+    - in_progress
+    - completed
+    type: string
+    x-enum-varnames:
+    - InProgress
+    - Completed
   models.User:
     properties:
       avatar:
@@ -105,6 +162,41 @@ definitions:
     properties:
       vocabulary_id:
         type: string
+    type: object
+  models.UserStory:
+    properties:
+      level:
+        $ref: '#/definitions/models.StoryLevel'
+      score:
+        type: integer
+      sentences:
+        description: list sentences include vtt
+        items:
+          $ref: '#/definitions/models.UserStorySentence'
+        type: array
+      status:
+        $ref: '#/definitions/models.StoryStatus'
+      story:
+        $ref: '#/definitions/models.Story'
+      story_id:
+        type: string
+      user_id:
+        type: string
+    required:
+    - level
+    type: object
+  models.UserStorySentence:
+    properties:
+      content:
+        type: string
+      end:
+        type: integer
+      start:
+        type: integer
+      user_answers:
+        items:
+          type: string
+        type: array
     type: object
   models.ValidationError:
     properties:
@@ -514,6 +606,40 @@ paths:
       security:
       - Bearer: []
       summary: delete dictionary
+      tags:
+      - users
+  /users/{user_id}/stories:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Story
+        in: body
+        name: story
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserStory'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserStory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ValidationError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalError'
+      security:
+      - Bearer: []
+      summary: doing a story
       tags:
       - users
   /vocabularies:
