@@ -32,15 +32,16 @@ type UserStorySentence struct {
 }
 type UserStory struct {
 	BaseModelUUID
-	UserId    string              `json:"user_id"`
-	StoryId   string              `json:"story_id"`
+	UserId    string              `json:"user_id" bun:"user_id,pk"`
+	StoryId   string              `json:"story_id" bun:"story_id,pk"`
 	Sentences []UserStorySentence `json:"sentences" bun:"type:json"` // list sentences include vtt
 	Level     StoryLevel          `json:"level" binding:"required"`
 	Status    StoryStatus         `json:"status"`
 	Score     int                 `json:"score"`
-
-	Story *Story `json:"story" bun:"rel:belongs-to,join:story_id=id"`
 	BaseModelAudit
+
+	User  *User  `json:"user" bun:"rel:belongs-to,join:user_id=id"`
+	Story *Story `json:"story" bun:"rel:belongs-to,join:story_id=id"`
 }
 type UserStories []*UserStory
 
@@ -54,7 +55,7 @@ func (u *UserStory) CreateUserStory(ctx *gin.Context) error {
 		s.CorrectAnswers = processSentence(&sentence.Content, u.Level)
 	}
 
-	if _, err := db.NewInsert().Model(u).Exec(ctx); err != nil {
+	if _, err := db.NewInsert().Model(u).On("DUPLICATE KEY UPDATE").Exec(ctx); err != nil {
 		return err
 	}
 	return nil

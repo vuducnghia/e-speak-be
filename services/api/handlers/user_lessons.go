@@ -6,30 +6,29 @@ import (
 	"net/http"
 )
 
-// CreateUserStory godoc
-// @Summary		doing a story
+// CreateUserLesson godoc
+// @Summary		create or update score lesson
 // @Tags		users
 // @Accept 		json
 // @Param		user_id path string true "User ID"
-// @Param		story body models.UserStory true "Story"
-// @Success 	200 {object} models.UserStory
+// @Param		story body models.UserLesson true "Lesson"
+// @Success 	200 {object} models.UserLesson
 // @Failure 	400 {object} models.ValidationError "Bad Request"
 // @Failure     500 {object} models.InternalError	"Internal Server Error"
-// @Router		/users/{user_id}/stories [post]
+// @Router		/users/{user_id}/lessons [post]
 // @Security 	Bearer
-func CreateUserStory(c *gin.Context) *gin.Error {
-	u := &models.UserStory{}
+func CreateUserLesson(c *gin.Context) *gin.Error {
+	u := &models.UserLesson{}
 	if err := c.ShouldBindJSON(u); err != nil {
-		return ValidationError(err, "error validating user story entity", c)
+		return ValidationError(err, "error validating user lesson entity", c)
 	}
 	u.UserId = GetUUIDFromPath("user_id", c)
 	if u.UserId == "" {
 		return BadParameterError(BadRequestParameter, "user_id", c)
 	}
 
-	u.Status = models.InProgress
-	if err := u.CreateUserStory(c); err != nil {
-		return DatabaseError(err, "error creating user story", c)
+	if err := u.Upsert(c); err != nil {
+		return DatabaseError(err, "error creating user lesson", c)
 	}
 
 	c.JSON(http.StatusOK, u)

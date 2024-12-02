@@ -4,6 +4,7 @@ import (
 	application "e-speak-be/internal/config"
 	"e-speak-be/internal/models"
 	"e-speak-be/internal/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -146,26 +147,28 @@ func LogoutUser(c *gin.Context) *gin.Error {
 // @Summary		create a user
 // @Tags		auth
 // @Accept		json
-// @Param		user body models.User true "user"
+// @Param		user body models.UserCredentials true "user"
 // @Success 	200
 // @Failure 	422 {object} models.ValidationError "error validating"
 // @Failure 	400 {object} models.InternalError "duplicate email"
 // @Router		/auth/register [post]
 func RegisterUser(c *gin.Context) *gin.Error {
-	u := &models.User{}
-	p := &models.UserPassword{}
-	if err := c.ShouldBindBodyWith(u, binding.JSON); err != nil {
+	uc := &models.UserCredentials{}
+	if err := c.ShouldBindBodyWith(uc, binding.JSON); err != nil {
 		return ValidationError(err, "error validating user entity", c)
 	}
-	if err := c.ShouldBindBodyWith(p, binding.JSON); err != nil {
-		return ValidationError(err, "error validating password entity", c)
-	}
-	if hash, err := bcrypt.GenerateFromPassword([]byte(p.Password), 10); err != nil {
+	hash, err := bcrypt.GenerateFromPassword([]byte(uc.Password), 10)
+	if err != nil {
 		return InternalError(err, "error creating the hashed password", c)
-	} else {
-		u.Password = string(hash)
 	}
+
+	u := &models.User{
+		Email:    uc.Email,
+		Password: string(hash),
+	}
+
 	if err := u.Create(c); err != nil {
+		fmt.Println(err)
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
 			return BadRequestError(err, "the email address is already registered", c)
 		}

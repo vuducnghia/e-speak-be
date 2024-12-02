@@ -1,7 +1,6 @@
 package models
 
 import (
-	"context"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/uptrace/bun"
 )
@@ -26,11 +25,4 @@ type Auth struct {
 	BaseModelSoftDelete
 
 	UserId string `json:"user_id"`
-}
-
-func (a *Auth) Upsert(c context.Context) error {
-	if _, err := db.NewInsert().Model(a).On("CONFLICT (user_id) DO UPDATE").Exec(c); err != nil {
-		return err
-	}
-	return nil
 }

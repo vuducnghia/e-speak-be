@@ -3,9 +3,9 @@ package models
 import "github.com/gin-gonic/gin"
 
 type Sentence struct {
-	Content string `json:"content"`
-	Start   int    `json:"start"`
-	End     int    `json:"end"`
+	Content string  `json:"content"`
+	Start   float32 `json:"start"`
+	End     float32 `json:"end"`
 }
 
 type Story struct {

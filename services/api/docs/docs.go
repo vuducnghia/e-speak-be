@@ -148,7 +148,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.UserCredentials"
                         }
                     }
                 ],
@@ -635,6 +635,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{user_id}/lessons": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "create or update score lesson",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lesson",
+                        "name": "story",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserLesson"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserLesson"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}/stories": {
             "post": {
                 "security": [
@@ -842,6 +896,41 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Lesson": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "ipa": {
+                    "type": "string"
+                },
+                "practice_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PracticeItem"
+                    }
+                },
+                "type": {
+                    "$ref": "#/definitions/models.LessonType"
+                }
+            }
+        },
+        "models.LessonType": {
+            "type": "string",
+            "enum": [
+                "word",
+                "phrase",
+                "sentence",
+                "conversation"
+            ],
+            "x-enum-varnames": [
+                "WordType",
+                "PhraseType",
+                "SentenceType",
+                "ConversationType"
+            ]
+        },
         "models.PaginationMeta": {
             "type": "object",
             "properties": {
@@ -867,6 +956,23 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PracticeItem": {
+            "type": "object",
+            "properties": {
+                "audio_url": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "transcript_ipa": {
+                    "type": "string"
+                },
+                "translation": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Sentence": {
             "type": "object",
             "properties": {
@@ -874,10 +980,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "end": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "start": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -952,8 +1058,7 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "required": [
-                "email",
-                "username"
+                "email"
             ],
             "properties": {
                 "avatar": {
@@ -962,14 +1067,21 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "google_id": {
+                "lessons": {
+                    "description": "relations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Lesson"
+                    }
+                },
+                "name": {
                     "type": "string"
                 },
-                "is_pay": {
-                    "type": "boolean"
-                },
-                "username": {
-                    "type": "string"
+                "stories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Story"
+                    }
                 }
             }
         },
@@ -993,6 +1105,26 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "vocabulary_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserLesson": {
+            "type": "object",
+            "properties": {
+                "lesson": {
+                    "$ref": "#/definitions/models.Lesson"
+                },
+                "lesson_id": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "number"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -1025,6 +1157,9 @@ const docTemplate = `{
                 "story_id": {
                     "type": "string"
                 },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                },
                 "user_id": {
                     "type": "string"
                 }
@@ -1037,10 +1172,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "end": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "start": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "user_answers": {
                     "type": "array",

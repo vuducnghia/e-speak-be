@@ -5,30 +5,40 @@ import (
 	"time"
 )
 
+type LessonType string
+
+const (
+	WordType         LessonType = "word"
+	PhraseType       LessonType = "phrase"
+	SentenceType     LessonType = "sentence"
+	ConversationType LessonType = "conversation"
+)
+
+type PracticeItem struct {
+	Content       string `json:"content"`
+	Translation   string `json:"translation"`
+	TranscriptIpa string `json:"transcript_ipa"`
+	AudioUrl      string `json:"audio_url"`
+}
+
 type Lesson struct {
 	BaseModelUUID
-	Name          string    `json:"name"`
-	Content       string    `json:"content"`
-	Type          string    `json:"type"`
-	Translation   string    `json:"translation"`
-	TranscriptIpa string    `json:"transcript_ipa"`
-	AudioUrl      string    `json:"audio_url"`
-	CreatedAt     time.Time `json:"created_at"`
+	IPA           string         `json:"ipa"`
+	Type          LessonType     `json:"type"`
+	PracticeItems []PracticeItem `json:"practice_items"`
+
+	CreatedAt time.Time `json:"created_at"`
 }
 type Lessons []*Lesson
 
-func (l *Lessons) GetAll(c *gin.Context, t, n string) (int, error) {
+func (l *Lessons) GetAllByUserId(c *gin.Context, t, ipa, uId string) (int, error) {
 	q := db.NewSelect().Model(l)
 	if t != "" {
 		q.Where("type = ?", t)
 	}
-	if n != "" {
-		q.Where("name = ?", n)
+	if ipa != "" {
+		q.Where("ipa = ?", ipa)
 	}
-
-	return ApplyPagination(q, c).ScanAndCount(c.Request.Context())
-}
-
-func (l *Lessons) GetListIPA(c *gin.Context, id int) error {
-	return db.NewSelect().Model(l).ColumnExpr("DISTINCT name").Scan(c)
+	q.Join("LEFT JOIN user_lessons AS ul ON lesson.id = ul.lesson_id AND ul.user_id = ?", uId)
+	return ApplyPagination(q.Order("ipa ASC"), c).ScanAndCount(c.Request.Context())
 }

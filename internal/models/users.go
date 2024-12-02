@@ -6,25 +6,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserPassword struct {
-	Password string `json:"password" binding:"required,min=6"`
-}
 type UserCredentials struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
 }
 type User struct {
 	BaseModelUUID
-	Name     string `json:"username" binding:"required"`
+	Name     string `json:"name"`
 	Password string `json:"-"`
-	GoogleId string `json:"google_id"`
+	GoogleId string `json:"-"`
 	Email    string `json:"email" binding:"required,email"`
 	Avatar   string `json:"avatar,omitempty"`
-	IsPay    bool   `json:"is_pay"`
+	IsPay    bool   `json:"-"`
 	BaseModelAudit
 	// BaseModelSoftDelete
 
 	//	relations
+	Lessons Lessons `bun:"m2m:user_lessons,join:User=Lesson"`
+	Stories Stories `bun:"m2m:user_stories,join:User=Story"`
 }
 type Users []*User
 

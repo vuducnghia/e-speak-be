@@ -21,7 +21,6 @@ CREATE TABLE stories
 
 CREATE TABLE user_stories
 (
-    id          varchar(255) PRIMARY KEY,
     user_id     varchar(255) REFERENCES users (id),
     story_id    varchar(255) REFERENCES stories (id),
     sentences   JSON,
@@ -29,5 +28,7 @@ CREATE TABLE user_stories
     status      varchar(255),
     score       INT,
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (user_id, story_id)
 );

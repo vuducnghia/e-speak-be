@@ -21,9 +21,11 @@ func GetLessons(c *gin.Context) *gin.Error {
 	l := models.Lessons{}
 
 	t := c.DefaultQuery("type", "word")
-	n := c.DefaultQuery("name", "")
+	i := c.DefaultQuery("ipa", "")
 	w := GetPaginationVariables(c)
-	if count, err := l.GetAll(c, t, n); err != nil {
+	uId, _ := c.Value("userId").(string)
+
+	if count, err := l.GetAllByUserId(c, t, i, uId); err != nil {
 		return EntityNotFoundError(err, "the error could not be found", c)
 	} else {
 		w = models.NewPaginationWrapper(l, count, c)

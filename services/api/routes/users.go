@@ -25,5 +25,10 @@ func addUserRoutes(r *gin.RouterGroup) {
 		{
 			userStories.POST("", handlers.Handler(handlers.CreateUserStory))
 		}
+
+		userLessons := users.Group("/:user_id/lessons")
+		{
+			userLessons.POST("", handlers.Handler(handlers.CreateUserLesson))
+		}
 	}
 }

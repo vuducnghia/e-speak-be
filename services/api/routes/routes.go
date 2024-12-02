@@ -48,10 +48,10 @@ func SetupRouter() *gin.Engine {
 	addUserRoutes(AuthApi)
 	addAuthRoutes(NoAuthApi)
 	addErrorRoutes(NoAuthApi)
-	addImageRoutes(NoAuthApi)
+	addImageRoutes(AuthApi)
 	addVocabulariesRoutes(NoAuthApi)
-	addAudioRoutes(NoAuthApi)
-	addLessonRoute(NoAuthApi)
+	addAudioRoutes(AuthApi)
+	addLessonRoute(AuthApi)
 	// use ginSwagger middleware to serve the API docs
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(
 		swaggerFiles.Handler,

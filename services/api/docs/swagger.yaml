@@ -58,6 +58,31 @@ definitions:
       type:
         type: string
     type: object
+  models.Lesson:
+    properties:
+      created_at:
+        type: string
+      ipa:
+        type: string
+      practice_items:
+        items:
+          $ref: '#/definitions/models.PracticeItem'
+        type: array
+      type:
+        $ref: '#/definitions/models.LessonType'
+    type: object
+  models.LessonType:
+    enum:
+    - word
+    - phrase
+    - sentence
+    - conversation
+    type: string
+    x-enum-varnames:
+    - WordType
+    - PhraseType
+    - SentenceType
+    - ConversationType
   models.PaginationMeta:
     properties:
       current_page:
@@ -74,14 +99,25 @@ definitions:
       metadata:
         $ref: '#/definitions/models.PaginationMeta'
     type: object
+  models.PracticeItem:
+    properties:
+      audio_url:
+        type: string
+      content:
+        type: string
+      transcript_ipa:
+        type: string
+      translation:
+        type: string
+    type: object
   models.Sentence:
     properties:
       content:
         type: string
       end:
-        type: integer
+        type: number
       start:
-        type: integer
+        type: number
     type: object
   models.Story:
     properties:
@@ -137,15 +173,19 @@ definitions:
         type: string
       email:
         type: string
-      google_id:
+      lessons:
+        description: relations
+        items:
+          $ref: '#/definitions/models.Lesson'
+        type: array
+      name:
         type: string
-      is_pay:
-        type: boolean
-      username:
-        type: string
+      stories:
+        items:
+          $ref: '#/definitions/models.Story'
+        type: array
     required:
     - email
-    - username
     type: object
   models.UserCredentials:
     properties:
@@ -161,6 +201,19 @@ definitions:
   models.UserDictionaries:
     properties:
       vocabulary_id:
+        type: string
+    type: object
+  models.UserLesson:
+    properties:
+      lesson:
+        $ref: '#/definitions/models.Lesson'
+      lesson_id:
+        type: string
+      score:
+        type: number
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
         type: string
     type: object
   models.UserStory:
@@ -180,6 +233,8 @@ definitions:
         $ref: '#/definitions/models.Story'
       story_id:
         type: string
+      user:
+        $ref: '#/definitions/models.User'
       user_id:
         type: string
     required:
@@ -190,9 +245,9 @@ definitions:
       content:
         type: string
       end:
-        type: integer
+        type: number
       start:
-        type: integer
+        type: number
       user_answers:
         items:
           type: string
@@ -302,7 +357,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.UserCredentials'
       responses:
         "200":
           description: OK
@@ -606,6 +661,40 @@ paths:
       security:
       - Bearer: []
       summary: delete dictionary
+      tags:
+      - users
+  /users/{user_id}/lessons:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Lesson
+        in: body
+        name: story
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLesson'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserLesson'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ValidationError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalError'
+      security:
+      - Bearer: []
+      summary: create or update score lesson
       tags:
       - users
   /users/{user_id}/stories:
