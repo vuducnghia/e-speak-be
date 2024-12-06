@@ -16,7 +16,7 @@ type Story struct {
 	Content       string     `json:"_" swaggerignore:"true"`
 	Description   string     `json:"description"`
 	Transcription string     `json:"transcription"`
-	Sentences     []Sentence `json:"sentences" bun:"type:json"` // list sentences include vtt
+	Sentences     []Sentence `json:"-" bun:"type:json"` // list sentences include vtt
 	Translation   string     `json:"translation"`
 	Author        string     `json:"author"`
 	ImageUrl      string     `json:"image_url"`

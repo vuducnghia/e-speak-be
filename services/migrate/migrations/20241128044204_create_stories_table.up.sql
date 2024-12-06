@@ -12,7 +12,7 @@ CREATE TABLE stories
     sentences     JSON,
     author        varchar(255),
     duration      INT,
-    views         INT,
+    views         INT DEFAULT 0,
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

@@ -186,6 +186,35 @@ func newDBCommand(migrator *migrate.Migrator) *cli.Command {
 					return nil
 				},
 			},
+			{
+				Name:  "run_script",
+				Usage: "run custom script sql",
+				Action: func(c *cli.Context) error {
+					file := "services/migrate/migrations/" + strings.Join(c.Args().Slice(), "_")
+					sqlBytes, err := os.ReadFile(file)
+					if err != nil {
+						return err
+					}
+					//if err := migrator.Lock(c.Context); err != nil {
+					//	return err
+					//}
+					//defer migrator.Unlock(c.Context)
+					for _, q := range strings.Split(string(sqlBytes), "--bun:split") {
+						fmt.Println(q)
+						q = strings.TrimSpace(q)
+						if q == "" {
+							continue
+						}
+						if _, err := migrator.DB().Exec(q); err != nil {
+							return err
+						}
+					}
+					if _, err := migrator.Migrate(c.Context, migrate.WithNopMigration()); err != nil {
+						return err
+					}
+					return nil
+				},
+			},
 		},
 	}
 }

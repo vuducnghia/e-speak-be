@@ -1,0 +1,2 @@
+UPDATE stories
+SET content= '';
