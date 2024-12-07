@@ -55,10 +55,10 @@ func UploadImage(c *gin.Context) *gin.Error {
 			Metadata:     imageForm.Metadata,
 		}
 
-		if err := application.GetFileService().CreateFile(imageForm.ImageFile, image.Path+image.Name); err != nil {
+		if err := application.GetFileService().CreateFile(c, imageForm.ImageFile, image.Path+image.Name); err != nil {
 			return InternalError(err, "uploaded file could not be saved", c)
 		}
-		if err := application.GetFileService().CreateFile(imageForm.ImageThumbnailFile, image.Path+"thumbnail_"+image.Name); err != nil {
+		if err := application.GetFileService().CreateFile(c, imageForm.ImageThumbnailFile, image.Path+"thumbnail_"+image.Name); err != nil {
 			return InternalError(err, "uploaded file could not be saved", c)
 		}
 

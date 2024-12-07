@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"io"
 	"mime/multipart"
@@ -15,11 +16,11 @@ func NewDiskFileService() *DiskFileService {
 	return &DiskFileService{}
 }
 
-func (d *DiskFileService) CreateFolder(path string) error {
+func (d *DiskFileService) CreateFolder(ctx context.Context, path string) error {
 	return os.MkdirAll(path, os.ModeDir)
 }
 
-func (d *DiskFileService) CreateFileFromReader(content io.ReadSeeker, dst string) error {
+func (d *DiskFileService) CreateFileFromReader(ctx context.Context, content io.ReadSeeker, dst string) error {
 	out, err := os.Create(dst)
 	if err != nil {
 		return err
@@ -40,7 +41,7 @@ func (d *DiskFileService) CreateFileFromReader(content io.ReadSeeker, dst string
 	return err
 }
 
-func (d *DiskFileService) CreateFile(file *multipart.FileHeader, dst string) error {
+func (d *DiskFileService) CreateFile(ctx context.Context, file *multipart.FileHeader, dst string) error {
 	src, err := file.Open()
 	if err != nil {
 		return err

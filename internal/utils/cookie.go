@@ -8,7 +8,7 @@ import (
 
 var (
 	cookiePath   = "/"
-	cookieDomain = "localhost"
+	cookieDomain = ""
 )
 
 func SetCookie(c *gin.Context, name string, value string, exp time.Duration) {

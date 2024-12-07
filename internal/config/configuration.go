@@ -22,13 +22,15 @@ var (
 )
 
 type Configuration struct {
-	ApplicationConfig *SystemConfig    `json:"application_config"`
-	SQLConfig         *DatabaseConfig  `json:"database_config"`
-	RedisConfig       *RedisConfig     `json:"redis_config"`
-	DirectoryConfig   *DirectoryConfig `json:"directory_config"`
+	ApplicationConfig *SystemConfig      `json:"application_config"`
+	SQLConfig         *DatabaseConfig    `json:"database_config"`
+	RedisConfig       *RedisConfig       `json:"redis_config"`
+	DirectoryConfig   *DirectoryConfig   `json:"directory_config"`
+	ObjectStoreConfig *ObjectStoreConfig `json:"object_store_config"`
 }
 
 type SystemConfig struct {
+	FileService          string        `json:"file_service"`
 	SecretKey            string        `json:"secret_key"`
 	AccessTokenDuration  time.Duration `json:"access_token_duration"`
 	RefreshTokenDuration time.Duration `json:"refresh_token_duration"`
@@ -53,9 +55,18 @@ type DirectoryConfig struct {
 	AudiosDirectory      string `json:"audios_directory"`
 }
 
+type ObjectStoreConfig struct {
+	AccessKey string `json:"access_key"`
+	SecretKey string `json:"secret_key"`
+	Region    string `json:"region"`
+	Endpoint  string `json:"endpoint"`
+	Bucket    string `json:"bucket"`
+}
+
 func setDefaultConfig() *Configuration {
 	return &Configuration{
 		ApplicationConfig: &SystemConfig{
+			FileService:          "disk",
 			LogLevel:             "info",
 			AccessTokenDuration:  time.Minute * 15,
 			RefreshTokenDuration: time.Hour * 24 * 7,
@@ -67,8 +78,9 @@ func setDefaultConfig() *Configuration {
 			ImagesDirectory:      "images/",
 			AudiosDirectory:      "audios/",
 		},
-		SQLConfig:   nil,
-		RedisConfig: nil,
+		ObjectStoreConfig: nil,
+		SQLConfig:         nil,
+		RedisConfig:       nil,
 	}
 }
 
@@ -124,10 +136,7 @@ func loadEnvironment(c *Configuration) {
 	if c.ApplicationConfig == nil {
 		c.ApplicationConfig = &SystemConfig{}
 	}
-	c.ApplicationConfig.SecretKey = checkEnvironment(
-		"APPLICATION_CONFIG__SECRET_KEY",
-		c.ApplicationConfig.SecretKey,
-	)
+	c.ApplicationConfig.SecretKey = checkEnvironment("APPLICATION_CONFIG__SECRET_KEY", c.ApplicationConfig.SecretKey)
 	if val, ok := os.LookupEnv("APPLICATION_CONFIG__ACCESS_TOKEN_DURATION"); ok {
 		if iVal, pErr := strconv.ParseInt(val, 10, 16); pErr == nil {
 			c.ApplicationConfig.AccessTokenDuration = time.Duration(iVal) * time.Second
@@ -138,10 +147,7 @@ func loadEnvironment(c *Configuration) {
 			c.ApplicationConfig.RefreshTokenDuration = time.Duration(iVal) * time.Second
 		}
 	}
-	c.ApplicationConfig.LogLevel = checkEnvironment(
-		"APPLICATION_CONFIG__LOG_LEVEL",
-		c.ApplicationConfig.LogLevel,
-	)
+	c.ApplicationConfig.LogLevel = checkEnvironment("APPLICATION_CONFIG__LOG_LEVEL", c.ApplicationConfig.LogLevel)
 	if val, ok := os.LookupEnv("APPLICATION_CONFIG__IS_DEBUG"); ok {
 		if bVal, pErr := strconv.ParseBool(val); pErr == nil {
 			c.ApplicationConfig.IsDebug = bVal
@@ -171,16 +177,18 @@ func loadEnvironment(c *Configuration) {
 	if c.DirectoryConfig == nil {
 		c.DirectoryConfig = &DirectoryConfig{}
 	}
-	c.DirectoryConfig.BaseAssetUrl = checkEnvironment(
-		"DIRECTORY_CONFIG__BASE_ASSET_URL",
-		c.DirectoryConfig.BaseAssetUrl,
-	)
-	c.DirectoryConfig.BaseUploadsDirectory = checkEnvironment(
-		"DIRECTORY_CONFIG__BASE_UPLOADS_DIRECTORY",
-		c.DirectoryConfig.BaseUploadsDirectory,
-	)
-	c.DirectoryConfig.ImagesDirectory = checkEnvironment(
-		"DIRECTORY_CONFIG__IMAGES_DIRECTORY",
-		c.DirectoryConfig.ImagesDirectory,
-	)
+	c.DirectoryConfig.BaseAssetUrl = checkEnvironment("DIRECTORY_CONFIG__BASE_ASSET_URL", c.DirectoryConfig.BaseAssetUrl)
+	c.DirectoryConfig.BaseUploadsDirectory = checkEnvironment("DIRECTORY_CONFIG__BASE_UPLOADS_DIRECTORY", c.DirectoryConfig.BaseUploadsDirectory)
+	c.DirectoryConfig.ImagesDirectory = checkEnvironment("DIRECTORY_CONFIG__IMAGES_DIRECTORY", c.DirectoryConfig.ImagesDirectory)
+	c.ApplicationConfig.FileService = checkEnvironment("APPLICATION_CONFIG__FILE_SERVICE", c.ApplicationConfig.FileService)
+	if c.ApplicationConfig.FileService == "object_store" {
+		if c.ObjectStoreConfig == nil {
+			c.ObjectStoreConfig = &ObjectStoreConfig{}
+		}
+		c.ObjectStoreConfig.AccessKey = checkEnvironment("OBJECT_STORE_CONFIG__ACCESS_KEY", c.ObjectStoreConfig.AccessKey)
+		c.ObjectStoreConfig.SecretKey = checkEnvironment("OBJECT_STORE_CONFIG__SECRET_KEY", c.ObjectStoreConfig.SecretKey)
+		c.ObjectStoreConfig.Region = checkEnvironment("OBJECT_STORE_CONFIG__REGION", c.ObjectStoreConfig.Region)
+		c.ObjectStoreConfig.Endpoint = checkEnvironment("OBJECT_STORE_CONFIG__ENDPOINT", c.ObjectStoreConfig.Endpoint)
+		c.ObjectStoreConfig.Bucket = checkEnvironment("OBJECT_STORE_CONFIG__BUCKET", c.ObjectStoreConfig.Bucket)
+	}
 }

@@ -973,20 +973,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Sentence": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "end": {
-                    "type": "number"
-                },
-                "start": {
-                    "type": "number"
-                }
-            }
-        },
         "models.Story": {
             "type": "object",
             "properties": {
@@ -1004,13 +990,6 @@ const docTemplate = `{
                 },
                 "image_url": {
                     "type": "string"
-                },
-                "sentences": {
-                    "description": "list sentences include vtt",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Sentence"
-                    }
                 },
                 "source": {
                     "type": "string"

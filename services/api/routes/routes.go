@@ -3,6 +3,7 @@ package routes
 import (
 	"e-speak-be/services/api/docs"
 	"e-speak-be/services/api/middleware"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ func SetupRouter() *gin.Engine {
 	docs.SwaggerInfo.Title = "Swagger E-Speak API"
 	docs.SwaggerInfo.Description = "This is a E-Speak golang server."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:9000"
+	docs.SwaggerInfo.Host = os.Getenv("SWAGGER_HOST")
 	docs.SwaggerInfo.BasePath = "/api"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 

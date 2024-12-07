@@ -1,12 +1,13 @@
 package services
 
 import (
+	"context"
 	"io"
 	"mime/multipart"
 )
 
 type FileService interface {
-	CreateFolder(path string) error
-	CreateFile(file *multipart.FileHeader, dst string) error
-	CreateFileFromReader(content io.ReadSeeker, dst string) error
+	CreateFolder(ctx context.Context, path string) error
+	CreateFile(ctx context.Context, file *multipart.FileHeader, dst string) error
+	CreateFileFromReader(ctx context.Context, content io.ReadSeeker, dst string) error
 }

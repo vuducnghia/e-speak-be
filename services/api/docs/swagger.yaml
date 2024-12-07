@@ -110,15 +110,6 @@ definitions:
       translation:
         type: string
     type: object
-  models.Sentence:
-    properties:
-      content:
-        type: string
-      end:
-        type: number
-      start:
-        type: number
-    type: object
   models.Story:
     properties:
       audio_url:
@@ -131,11 +122,6 @@ definitions:
         type: integer
       image_url:
         type: string
-      sentences:
-        description: list sentences include vtt
-        items:
-          $ref: '#/definitions/models.Sentence'
-        type: array
       source:
         type: string
       title:
