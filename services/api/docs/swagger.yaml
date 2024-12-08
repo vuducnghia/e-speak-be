@@ -70,6 +70,10 @@ definitions:
         type: array
       type:
         $ref: '#/definitions/models.LessonType'
+      user_lessons:
+        items:
+          $ref: '#/definitions/models.UserLesson'
+        type: array
     type: object
   models.LessonType:
     enum:
@@ -191,14 +195,10 @@ definitions:
     type: object
   models.UserLesson:
     properties:
-      lesson:
-        $ref: '#/definitions/models.Lesson'
       lesson_id:
         type: string
       score:
-        type: number
-      user:
-        $ref: '#/definitions/models.User'
+        type: integer
       user_id:
         type: string
     type: object
@@ -461,9 +461,9 @@ paths:
         in: query
         name: type
         type: string
-      - description: name
+      - description: ipa
         in: query
-        name: name
+        name: ipa
         type: string
       responses:
         "200":
@@ -650,6 +650,37 @@ paths:
       tags:
       - users
   /users/{user_id}/lessons:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: ipa
+        in: query
+        name: ipa
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserLesson'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ValidationError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalError'
+      security:
+      - Bearer: []
+      summary: get all score lesson
+      tags:
+      - users
     post:
       consumes:
       - application/json
@@ -661,7 +692,7 @@ paths:
         type: string
       - description: Lesson
         in: body
-        name: story
+        name: lesson
         required: true
         schema:
           $ref: '#/definitions/models.UserLesson'

@@ -339,8 +339,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "name",
-                        "name": "name",
+                        "description": "ipa",
+                        "name": "ipa",
                         "in": "query"
                     }
                 ],
@@ -636,6 +636,55 @@ const docTemplate = `{
             }
         },
         "/users/{user_id}/lessons": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "get all score lesson",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ipa",
+                        "name": "ipa",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserLesson"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -659,7 +708,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "Lesson",
-                        "name": "story",
+                        "name": "lesson",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -913,6 +962,12 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/models.LessonType"
+                },
+                "user_lessons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserLesson"
+                    }
                 }
             }
         },
@@ -1091,17 +1146,11 @@ const docTemplate = `{
         "models.UserLesson": {
             "type": "object",
             "properties": {
-                "lesson": {
-                    "$ref": "#/definitions/models.Lesson"
-                },
                 "lesson_id": {
                     "type": "string"
                 },
                 "score": {
-                    "type": "number"
-                },
-                "user": {
-                    "$ref": "#/definitions/models.User"
+                    "type": "integer"
                 },
                 "user_id": {
                     "type": "string"

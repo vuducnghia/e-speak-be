@@ -12,7 +12,7 @@ import (
 // @Param       limit    		query     string  false  "limit"
 // @Param       page_number    	query     string  false  "page_number"
 // @Param       type    query     string  false  "type"
-// @Param       name    query     string  false  "name"
+// @Param       ipa    query     string  false  "ipa"
 // @Success 	200 {object} models.PaginationWrapper
 // @Failure 	404 {object} models.InternalError	"Entity Not Found"
 // @Router		/lessons [get]
@@ -20,7 +20,7 @@ import (
 func GetLessons(c *gin.Context) *gin.Error {
 	l := models.Lessons{}
 
-	t := c.DefaultQuery("type", "word")
+	t := c.DefaultQuery("type", "")
 	i := c.DefaultQuery("ipa", "")
 	w := GetPaginationVariables(c)
 	uId, _ := c.Value("userId").(string)

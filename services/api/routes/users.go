@@ -28,6 +28,7 @@ func addUserRoutes(r *gin.RouterGroup) {
 
 		userLessons := users.Group("/:user_id/lessons")
 		{
+			userLessons.GET("", handlers.Handler(handlers.GetUserLessons))
 			userLessons.POST("", handlers.Handler(handlers.CreateUserLesson))
 		}
 	}

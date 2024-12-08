@@ -36,7 +36,7 @@ func LoginUser(c *gin.Context) *gin.Error {
 		return AuthenticationError(err, "wrong username or password", c)
 	}
 
-	accessDuration := application.GetConfig().ApplicationConfig.RefreshTokenDuration
+	accessDuration := application.GetConfig().ApplicationConfig.AccessTokenDuration
 	refreshDuration := application.GetConfig().ApplicationConfig.RefreshTokenDuration
 
 	session := &models.Session{
