@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	log "e-speak-be/internal/logger"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
@@ -62,36 +62,6 @@ func CheckPhonemes(c *gin.Context) *gin.Error {
 		return InternalError(err, "uploaded file audio could not be saved", c)
 	}
 
-	//wavFile, err := os.Open(audioFile)
-	//if err != nil {
-	//	return InternalError(err, "an error occurred opening the audio file", c)
-	//}
-	//defer wavFile.Close()
-	//
-	//decoder := wav.NewDecoder(wavFile)
-	//decoder.IsValidFile()
-	//decoder.ReadInfo()
-	//if decoder.SampleRate != 16000 {
-	//	buf, err := decoder.FullPCMBuffer()
-	//	if err != nil {
-	//		return InternalError(err, "an error occurred reading the audio file", c)
-	//	}
-	//
-	//	outFile, err := os.Create(audioFile)
-	//	if err != nil {
-	//		return InternalError(err, "an error occurred converting the audio file", c)
-	//	}
-	//	defer outFile.Close()
-	//
-	//	encoder := wav.NewEncoder(outFile, 16000, 16, 1, 1)
-	//	if err := encoder.Write(buf); err != nil {
-	//		return InternalError(err, "an error occurred writing new the audio file", c)
-	//	}
-	//	if err := encoder.Close(); err != nil {
-	//		return InternalError(err, "an error occurred closing new the audio file", c)
-	//	}
-	//}
-
 	payload := []byte(fmt.Sprintf(`{
 		"audio_file":"%s",
 		"ground_truth":"%s"
@@ -100,7 +70,7 @@ func CheckPhonemes(c *gin.Context) *gin.Error {
 	req, err := http.NewRequest("POST", "http://phoneme:5000/predict",
 		bytes.NewBuffer(payload))
 	if err != nil {
-		log.Fatalf("Error occurred while creating request: %v", err)
+		log.Error().Err(err).Msg("Error occurred while creating request")
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -121,6 +91,11 @@ func CheckPhonemes(c *gin.Context) *gin.Error {
 		return InternalError(err, "an error occurred parsing response phoneme", c)
 	}
 
+	go func() {
+		if err := DeleteFile(audioFile); err != nil {
+			log.Error().Err(err).Msg("delete file audio")
+		}
+	}()
 	c.JSON(http.StatusOK, response)
 
 	return nil

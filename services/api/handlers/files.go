@@ -3,6 +3,7 @@ package handlers
 import (
 	application "e-speak-be/internal/config"
 	"github.com/google/uuid"
+	"os"
 	"strings"
 )
 
@@ -32,4 +33,8 @@ func GetUniqueFileNameNoExtension() string {
 
 func GetImagesUrl() string {
 	return GetBaseAssetUrl() + application.GetConfig().DirectoryConfig.ImagesDirectory
+}
+
+func DeleteFile(path string) error {
+	return os.Remove(path)
 }
