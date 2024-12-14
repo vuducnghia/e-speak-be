@@ -41,7 +41,7 @@ func LoginUser(c *gin.Context) *gin.Error {
 
 	session := &models.Session{
 		UserId:     u.Id,
-		Expiration: refreshDuration,
+		Expiration: accessDuration,
 	}
 	if err := session.SetSession(c); err != nil {
 		return InternalError(err, "cannot set session", c)

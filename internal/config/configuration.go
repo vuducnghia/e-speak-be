@@ -138,12 +138,12 @@ func loadEnvironment(c *Configuration) {
 	}
 	c.ApplicationConfig.SecretKey = checkEnvironment("APPLICATION_CONFIG__SECRET_KEY", c.ApplicationConfig.SecretKey)
 	if val, ok := os.LookupEnv("APPLICATION_CONFIG__ACCESS_TOKEN_DURATION"); ok {
-		if iVal, pErr := strconv.ParseInt(val, 10, 16); pErr == nil {
+		if iVal, pErr := strconv.ParseInt(val, 10, 32); pErr == nil {
 			c.ApplicationConfig.AccessTokenDuration = time.Duration(iVal) * time.Second
 		}
 	}
 	if val, ok := os.LookupEnv("APPLICATION_CONFIG__REFRESH_TOKEN_DURATION"); ok {
-		if iVal, pErr := strconv.ParseInt(val, 10, 16); pErr == nil {
+		if iVal, pErr := strconv.ParseInt(val, 10, 32); pErr == nil {
 			c.ApplicationConfig.RefreshTokenDuration = time.Duration(iVal) * time.Second
 		}
 	}
