@@ -4,7 +4,6 @@ import (
 	application "e-speak-be/internal/config"
 	"e-speak-be/internal/models"
 	"e-speak-be/internal/utils"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -168,7 +167,6 @@ func RegisterUser(c *gin.Context) *gin.Error {
 	}
 
 	if err := u.Create(c); err != nil {
-		fmt.Println(err)
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
 			return BadRequestError(err, "the email address is already registered", c)
 		}

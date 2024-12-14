@@ -19,4 +19,6 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
 
 COPY --from=builder app/e-speak /app/e-speak
 COPY .env .
+COPY ./internal/csv_tools/level_words ./internal/csv_tools/level_words
+COPY ./internal/csv_tools/unigram_freq.csv ./internal/csv_tools/unigram_freq.csv
 CMD ["/app/e-speak"]

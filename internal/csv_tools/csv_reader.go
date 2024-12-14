@@ -3,7 +3,6 @@ package csv_tools
 import (
 	log "e-speak-be/internal/logger"
 	"encoding/csv"
-	"fmt"
 	"os"
 )
 
@@ -11,8 +10,6 @@ var LevelWords map[string]string
 
 func GetLevel(word string) (string, bool) {
 	if len(LevelWords) == 0 {
-		currentDir, _ := os.Getwd()
-		fmt.Println(currentDir)
 		rows := CsvToSliceOfSlices("./internal/csv_tools/level_words", 0)
 		LevelWords = make(map[string]string, len(rows))
 		for _, r := range rows {
