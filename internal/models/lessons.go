@@ -44,5 +44,5 @@ func (l *Lessons) GetAllByUserId(c *gin.Context, t, ipa, uId string) (int, error
 	q.Relation("UserLessons", func(sq *bun.SelectQuery) *bun.SelectQuery {
 		return sq.Where("user_id = ?", uId)
 	})
-	return ApplyPagination(q.Order("ipa ASC"), c).ScanAndCount(c.Request.Context())
+	return ApplyPagination(q.Order("ipa ASC"), c).ScanAndCount(c)
 }

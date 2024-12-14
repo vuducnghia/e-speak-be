@@ -378,6 +378,114 @@ const docTemplate = `{
                 }
             }
         },
+        "/stories": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "tags": [
+                    "stories"
+                ],
+                "summary": "return list stories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page_number",
+                        "name": "page_number",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "title",
+                        "name": "title",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PaginationWrapper"
+                        }
+                    },
+                    "404": {
+                        "description": "Entity Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    }
+                }
+            }
+        },
+        "/stories/{story_id}/users/{user_id}": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stories"
+                ],
+                "summary": "doing a story",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Story ID",
+                        "name": "story_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Story",
+                        "name": "story",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserStory"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserStory"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ValidationError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -738,60 +846,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{user_id}/stories": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "doing a story",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Story",
-                        "name": "story",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UserStory"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserStory"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ValidationError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.InternalError"
-                        }
-                    }
-                }
-            }
-        },
         "/vocabularies": {
             "get": {
                 "security": [
@@ -1058,6 +1112,12 @@ const docTemplate = `{
                 "translation": {
                     "type": "string"
                 },
+                "user_stories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserStory"
+                    }
+                },
                 "views": {
                     "type": "integer"
                 }
@@ -1076,17 +1136,6 @@ const docTemplate = `{
                 "Intermediate",
                 "Advanced",
                 "Proficient"
-            ]
-        },
-        "models.StoryStatus": {
-            "type": "string",
-            "enum": [
-                "in_progress",
-                "completed"
-            ],
-            "x-enum-varnames": [
-                "InProgress",
-                "Completed"
             ]
         },
         "models.User": {
@@ -1166,9 +1215,6 @@ const docTemplate = `{
                 "level": {
                     "$ref": "#/definitions/models.StoryLevel"
                 },
-                "score": {
-                    "type": "integer"
-                },
                 "sentences": {
                     "description": "list sentences include vtt",
                     "type": "array",
@@ -1176,17 +1222,8 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.UserStorySentence"
                     }
                 },
-                "status": {
-                    "$ref": "#/definitions/models.StoryStatus"
-                },
-                "story": {
-                    "$ref": "#/definitions/models.Story"
-                },
                 "story_id": {
                     "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/models.User"
                 },
                 "user_id": {
                     "type": "string"
@@ -1196,15 +1233,6 @@ const docTemplate = `{
         "models.UserStorySentence": {
             "type": "object",
             "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "end": {
-                    "type": "number"
-                },
-                "start": {
-                    "type": "number"
-                },
                 "user_answers": {
                     "type": "array",
                     "items": {

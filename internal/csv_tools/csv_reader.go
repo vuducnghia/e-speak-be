@@ -3,6 +3,7 @@ package csv_tools
 import (
 	log "e-speak-be/internal/logger"
 	"encoding/csv"
+	"fmt"
 	"os"
 )
 
@@ -10,12 +11,18 @@ var LevelWords map[string]string
 
 func GetLevel(word string) (string, bool) {
 	if len(LevelWords) == 0 {
-		rows := CsvToSliceOfSlices("level_words.csv", 0)
+		currentDir, _ := os.Getwd()
+		fmt.Println(currentDir)
+		rows := CsvToSliceOfSlices("./internal/csv_tools/level_words", 0)
+		LevelWords = make(map[string]string, len(rows))
 		for _, r := range rows {
 			LevelWords[r[0]] = r[1]
 		}
-		rows = CsvToSliceOfSlices("unigram_freq.csv", 10000)
+		rows = CsvToSliceOfSlices("./internal/csv_tools/unigram_freq.csv", 10000)
 		for _, r := range rows {
+			if _, exist := LevelWords[word]; exist {
+				continue
+			}
 			LevelWords[r[0]] = "freq"
 		}
 	}

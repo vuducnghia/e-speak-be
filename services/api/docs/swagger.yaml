@@ -134,6 +134,10 @@ definitions:
         type: string
       translation:
         type: string
+      user_stories:
+        items:
+          $ref: '#/definitions/models.UserStory'
+        type: array
       views:
         type: integer
     type: object
@@ -149,14 +153,6 @@ definitions:
     - Intermediate
     - Advanced
     - Proficient
-  models.StoryStatus:
-    enum:
-    - in_progress
-    - completed
-    type: string
-    x-enum-varnames:
-    - InProgress
-    - Completed
   models.User:
     properties:
       avatar:
@@ -206,21 +202,13 @@ definitions:
     properties:
       level:
         $ref: '#/definitions/models.StoryLevel'
-      score:
-        type: integer
       sentences:
         description: list sentences include vtt
         items:
           $ref: '#/definitions/models.UserStorySentence'
         type: array
-      status:
-        $ref: '#/definitions/models.StoryStatus'
-      story:
-        $ref: '#/definitions/models.Story'
       story_id:
         type: string
-      user:
-        $ref: '#/definitions/models.User'
       user_id:
         type: string
     required:
@@ -228,12 +216,6 @@ definitions:
     type: object
   models.UserStorySentence:
     properties:
-      content:
-        type: string
-      end:
-        type: number
-      start:
-        type: number
       user_answers:
         items:
           type: string
@@ -489,6 +471,74 @@ paths:
       summary: return list IPA
       tags:
       - lessons
+  /stories:
+    get:
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: page_number
+        in: query
+        name: page_number
+        type: string
+      - description: title
+        in: query
+        name: title
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PaginationWrapper'
+        "404":
+          description: Entity Not Found
+          schema:
+            $ref: '#/definitions/models.InternalError'
+      security:
+      - Bearer: []
+      summary: return list stories
+      tags:
+      - stories
+  /stories/{story_id}/users/{user_id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Story ID
+        in: path
+        name: story_id
+        required: true
+        type: string
+      - description: Story
+        in: body
+        name: story
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserStory'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserStory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ValidationError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalError'
+      security:
+      - Bearer: []
+      summary: doing a story
+      tags:
+      - stories
   /users:
     get:
       parameters:
@@ -712,40 +762,6 @@ paths:
       security:
       - Bearer: []
       summary: create or update score lesson
-      tags:
-      - users
-  /users/{user_id}/stories:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: User ID
-        in: path
-        name: user_id
-        required: true
-        type: string
-      - description: Story
-        in: body
-        name: story
-        required: true
-        schema:
-          $ref: '#/definitions/models.UserStory'
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.UserStory'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ValidationError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.InternalError'
-      security:
-      - Bearer: []
-      summary: doing a story
       tags:
       - users
   /vocabularies:

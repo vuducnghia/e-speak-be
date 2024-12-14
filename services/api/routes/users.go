@@ -21,11 +21,6 @@ func addUserRoutes(r *gin.RouterGroup) {
 			userDictionaries.DELETE("/:vocabulary_id", handlers.Handler(handlers.DeleteDictionary))
 		}
 
-		userStories := users.Group("/:user_id/stories")
-		{
-			userStories.POST("", handlers.Handler(handlers.CreateUserStory))
-		}
-
 		userLessons := users.Group("/:user_id/lessons")
 		{
 			userLessons.GET("", handlers.Handler(handlers.GetUserLessons))
