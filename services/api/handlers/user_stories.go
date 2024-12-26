@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"e-speak-be/internal/models"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -35,8 +34,7 @@ func CreateUserStory(c *gin.Context) *gin.Error {
 	if err := c.ShouldBindJSON(us); err != nil {
 		return ValidationError(err, "error validating user story entity", c)
 	}
-	fmt.Println(us)
-	// scoreCalculation(u)
+
 	// update answers
 	if len(us.Sentences) > 0 {
 		if err := u.GetById(c); err != nil {
