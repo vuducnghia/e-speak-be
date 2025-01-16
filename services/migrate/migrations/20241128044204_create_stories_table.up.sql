@@ -26,7 +26,7 @@ CREATE TABLE user_stories
     sentences   JSON,
     level       varchar(255),
     status      varchar(255),
-    score       INT,
+    score       decimal,
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

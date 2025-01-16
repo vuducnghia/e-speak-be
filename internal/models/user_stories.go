@@ -3,11 +3,12 @@ package models
 import (
 	"e-speak-be/internal/csv_tools"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"math/rand"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type StoryStatus string
@@ -36,11 +37,12 @@ type UserStory struct {
 	Sentences []UserStorySentence `json:"sentences" bun:"type:json"` // list sentences include vtt
 	Level     StoryLevel          `json:"level" binding:"required"`
 	Status    StoryStatus         `json:"status" swaggerignore:"true"`
-	Score     int                 `json:"score" swaggerignore:"true"`
+	Score     float64             `json:"score" swaggerignore:"true"`
 	BaseModelAudit
 
-	User  *User  `json:"user" bun:"rel:belongs-to,join:user_id=id" swaggerignore:"true"`
-	Story *Story `json:"story" bun:"rel:belongs-to,join:story_id=id" swaggerignore:"true"`
+	GradingFlag bool   `json:"grading_flag" bun:"-" swaggerignore:"true"`
+	User        *User  `json:"user" bun:"rel:belongs-to,join:user_id=id" swaggerignore:"true"`
+	Story       *Story `json:"story" bun:"rel:belongs-to,join:story_id=id" swaggerignore:"true"`
 }
 type UserStories []*UserStory
 

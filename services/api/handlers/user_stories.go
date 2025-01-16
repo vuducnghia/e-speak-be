@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"e-speak-be/internal/models"
-	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 // CreateUserStory godoc
@@ -28,7 +30,6 @@ func CreateUserStory(c *gin.Context) *gin.Error {
 	if u.StoryId == "" {
 		return BadParameterError(BadRequestParameter, "story_id", c)
 	}
-
 	us := &models.UserStory{}
 	if err := c.ShouldBindJSON(us); err != nil {
 		return ValidationError(err, "error validating user story entity", c)
@@ -57,7 +58,12 @@ func CreateUserStory(c *gin.Context) *gin.Error {
 
 		removeCorrectAnswers(u)
 	}
-
+	numberCorrectAnswers := 0.0
+	numberCorrectWord := 0.0
+	// Score calculation
+	if us.GradingFlag {
+		scoreCalculation(u, numberCorrectAnswers, numberCorrectWord)
+	}
 	c.JSON(http.StatusOK, u)
 	return nil
 }
@@ -78,4 +84,18 @@ func removeCorrectAnswers(u *models.UserStory) {
 	for i := range u.Story.Sentences {
 		u.Sentences[i].CorrectAnswers = nil
 	}
+}
+
+func scoreCalculation(u *models.UserStory, numberCorrectAnswers, numberCorrectWord float64) {
+	for i := 0; i < len(u.Sentences); i++ {
+		if u.Sentences[i].UserAnswers != nil {
+			for j := 0; j < len(u.Sentences[i].UserAnswers); j++ {
+				if u.Sentences[i].UserAnswers != nil && strings.EqualFold(strings.ToLower(u.Sentences[i].CorrectAnswers[j]), strings.ToLower(u.Sentences[i].UserAnswers[j])) {
+					numberCorrectAnswers += 1
+				}
+			}
+		}
+		numberCorrectWord += float64(len(u.Sentences[i].CorrectAnswers))
+	}
+	u.Score = numberCorrectAnswers / numberCorrectWord
 }
