@@ -5,7 +5,6 @@ import (
 	log "e-speak-be/internal/logger"
 	"e-speak-be/services/migrate/migrations"
 	"fmt"
-
 	"os"
 	"strings"
 
@@ -23,7 +22,7 @@ func main() {
 		log.Fatal().Err(err).Msg("error initializing application")
 	}
 
-	//db := bun.NewDB(sqldb, mysqldialect.New())
+	// db := bun.NewDB(sqldb, mysqldialect.New())
 	application.DB.AddQueryHook(bundebug.NewQueryHook(
 		bundebug.WithEnabled(false),
 		bundebug.FromEnv(),
